@@ -1,7 +1,7 @@
 {
   "recovered_for_issue": "OME-110",
   "unblocks_issue": "OME-107",
-  "canonical_workspace_root": "D:\\work\\smartfarm-api-ome110",
+  "canonical_workspace_root": "D:\\work\\smartfarm-api",
   "canonical_live_artifacts": {
     "ruleset": "compliance/usda-hgap-v1.json",
     "overlay": "compliance/usda-hgap-overlay-leafy-greens-v1.json",
