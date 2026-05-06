@@ -24,6 +24,11 @@ OUT = COMPLIANCE / "recovered" / "ome107-baseline-1.0.0"
 XLSX = COMPLIANCE / "_ams-checklist-v6.2.xlsx"
 LIVE_RULESET = COMPLIANCE / "usda-hgap-v1.json"
 LIVE_OVERLAY = COMPLIANCE / "usda-hgap-overlay-leafy-greens-v1.json"
+CANONICAL_ROOT = (
+    ROOT.parent / "smartfarm-api"
+    if ROOT.name != "smartfarm-api" and (ROOT.parent / "smartfarm-api").exists()
+    else ROOT
+)
 
 OUT_REPORT = OUT / "ams-coverage-report.md"
 OUT_SECTION_MD = OUT / "_ams-coverage-section-b.md"
@@ -196,7 +201,7 @@ def main() -> None:
     manifest = {
         "recovered_for_issue": "OME-110",
         "unblocks_issue": "OME-107",
-        "canonical_workspace_root": str(ROOT),
+        "canonical_workspace_root": str(CANONICAL_ROOT),
         "canonical_live_artifacts": {
             "ruleset": "compliance/usda-hgap-v1.json",
             "overlay": "compliance/usda-hgap-overlay-leafy-greens-v1.json",
@@ -272,7 +277,7 @@ def main() -> None:
         "`1.1.0` and `1.2.0` revisions.",
         "",
         "Canonical workspace",
-        f"- `{ROOT}`",
+        f"- `{CANONICAL_ROOT}`",
         "",
         "Live files of record",
         "- `compliance/usda-hgap-v1.json` (current live base ruleset; now `1.2.0`)",

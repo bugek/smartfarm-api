@@ -29,6 +29,6 @@ F-1.2, F-1.3, F-10.1, F-10.2, F-10.3, F-10.4, F-11.4, F-12.2, F-4.4, F-4.5, F-6.
 ## Notes
 
 - Rows classified as `mapped_at_1_0_0` were already covered before the approved Phase 4 expansion work began.
-- Rows classified as `introduced_in_revision = 1.1.0` or `1.2.0` come directly from the approved issue scopes and completion comments for `OME-102` and `OME-103`.
+- Rows classified as `introduced_in_revision = 1.1.0` or `1.2.0` come directly from the approved issue scopes and completion comments for `OME-107` and `OME-108`.
 - Use the versioned inventory in `_ams-coverage-section-b.{md,json}` for row-by-row implementation planning.
 
