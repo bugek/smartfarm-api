@@ -36,6 +36,17 @@ pnpm typecheck
 pnpm build
 ```
 
+## Compliance Artifacts
+
+The canonical SmartFarm GAP ruleset and AMS coverage artifacts now live in:
+
+- `compliance/`
+- `scripts/parse_ams_checklist.py`
+
+The `compliance/recovered/ome107-baseline-1.0.0/` package preserves the
+authoritative 1.0.0 baseline boundary needed for `OME-107` after the live
+ruleset was advanced in place to later revisions.
+
 ## Planned modules
 
 - `src/modules/auth`
