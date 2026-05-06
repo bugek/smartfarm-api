@@ -40,6 +40,13 @@ enum EvidenceReviewDecision {
   comment
 }
 
+enum ReviewThreadStatus {
+  awaiting_review
+  changes_requested
+  approved
+  rejected
+}
+
 enum DocumentKind {
   image
   video
@@ -192,6 +199,7 @@ model GapRecord {
   title           String
   notes           String?
   status          GapRecordStatus @default(draft)
+  reviewThreadStatus ReviewThreadStatus @default(awaiting_review)
   recordedAt      DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt

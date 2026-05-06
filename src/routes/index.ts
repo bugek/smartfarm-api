@@ -10,6 +10,7 @@ import { farmSitesRouter } from "./v1/farm-sites.js";
 import { organizationsRouter } from "./v1/organizations.js";
 import { plotsRouter } from "./v1/plots.js";
 import { reviewQueueRouter } from "./v1/review-queue.js";
+import { reviewsRouter } from "./v1/reviews.js";
 
 export function registerRoutes(app: Express) {
   app.get("/", (_req: Request, res: Response) => {
@@ -29,6 +30,7 @@ export function registerRoutes(app: Express) {
   app.use("/api/v1/documents", documentsRouter);
   app.use("/api/v1/evidence", evidenceRouter);
   app.use("/api/v1/review-queue", reviewQueueRouter);
+  app.use("/api/v1/reviews", reviewsRouter);
 
   app.use((error: unknown, _req: Request, res: Response, _next: () => void) => {
     if (error instanceof ZodError) {

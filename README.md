@@ -83,3 +83,17 @@ For local validation, `.env.example` includes a dev bootstrap user:
 
 - email: `demo@smartfarm.local`
 - password: `smartfarm-demo`
+
+## Review thread contract
+
+`OME-95` adds per-GAP-record review thread endpoints on top of the existing
+evidence review log:
+
+- `GET /api/v1/gap-records/:id/reviews`
+- `GET /api/v1/reviews?gapRecordId=<gapRecordId>`
+- `POST /api/v1/reviews/:id/comments`
+- `PATCH /api/v1/reviews/:id`
+
+The thread resource is keyed by `gapRecordId`, merges manual advisory comments
+with append-only `EvidenceReview` entries, and exposes an overall thread status
+for the SmartFarm web review surface.
