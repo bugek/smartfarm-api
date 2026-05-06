@@ -2,7 +2,7 @@
 
 **Status:** authoritative (regenerated for ruleset revision `1.2.0` on 2026-05-06).
 **Owner:** GAP Compliance Expert (46b63bd4)
-**Issues:** OME-27 parent plan, OME-102 Phase 4.1 delivery, OME-103 Phase 4.2 delivery.
+**Issues:** OME-27 parent plan, OME-107 Phase 4.1 delivery, OME-108 Phase 4.2 delivery.
 **Source of truth:** `compliance/_ams-checklist-v6.2.xlsx` parsed by `scripts/parse_ams_checklist.py`.
 **Generated against:** `compliance/usda-hgap-v1.json` revision `1.2.0` (`81` controls, status `published`).
 
@@ -21,7 +21,7 @@ inventory is `compliance/_ams-coverage-section-b.{md,json}`.
 Phase 4.2 closes the remaining base Field Operations gap:
 
 - All **126 of 126** AMS base rows are now represented in base-ruleset `ams_ids[]`.
-- The 17 deferred Field Operations rows from the approved `OME-103` scope are now covered in `1.2.0`.
+- The 17 deferred Field Operations rows from the approved `OME-108` scope are now covered in `1.2.0`.
 - The uplift added 12 new `HGAP.FO.*` controls, keeping bundling conservative and traceable:
   - `HGAP.FO.6.9` bundles `F-7.3` + `F-7.5`
   - `HGAP.FO.6.13` bundles `F-10.1`-`F-10.4`

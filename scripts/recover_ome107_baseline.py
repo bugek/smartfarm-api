@@ -3,7 +3,7 @@
 The live shared compliance workspace was advanced in place from the published
 1.0.0 baseline to later 1.1.0 and 1.2.0 revisions. This script recreates a
 versioned recovery package for the 1.0.0 baseline using the authoritative
-release trail recorded in OME-6 / OME-21 / OME-22 / OME-35 / OME-102 / OME-103.
+release trail recorded in OME-6 / OME-21 / OME-22 / OME-35 / OME-107 / OME-108.
 
 Outputs land under:
   compliance/recovered/ome107-baseline-1.0.0/
@@ -32,7 +32,7 @@ OUT_MANIFEST = OUT / "baseline-manifest.json"
 OUT_README = OUT / "README.md"
 
 
-# Exact later-release row boundaries recovered from OME-102 + OME-103.
+# Exact later-release row boundaries recovered from OME-107 + OME-108.
 PHASE_4_1_ROWS = {
     "G-1.1",
     "G-1.1.a",
@@ -326,7 +326,7 @@ def main() -> None:
         "## Notes",
         "",
         "- Rows classified as `mapped_at_1_0_0` were already covered before the approved Phase 4 expansion work began.",
-        "- Rows classified as `introduced_in_revision = 1.1.0` or `1.2.0` come directly from the approved issue scopes and completion comments for `OME-102` and `OME-103`.",
+        "- Rows classified as `introduced_in_revision = 1.1.0` or `1.2.0` come directly from the approved issue scopes and completion comments for `OME-107` and `OME-108`.",
         "- Use the versioned inventory in `_ams-coverage-section-b.{md,json}` for row-by-row implementation planning.",
         "",
     ]
