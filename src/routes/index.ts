@@ -1,6 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { ZodError } from "zod";
 import { authRouter } from "./v1/auth.js";
+import { auditReadinessRouter } from "./v1/audit-readiness.js";
+import { correctiveActionsRouter } from "./v1/corrective-actions.js";
 import { cropCyclesRouter } from "./v1/crop-cycles.js";
 import { documentsRouter } from "./v1/documents.js";
 import { evidenceRouter } from "./v1/evidence.js";
@@ -24,6 +26,8 @@ export function registerRoutes(app: Express) {
 
   app.use("/api/v1/health", healthRouter);
   app.use("/api/v1/auth", authRouter);
+  app.use("/api/v1/audit-readiness", auditReadinessRouter);
+  app.use("/api/v1/corrective-actions", correctiveActionsRouter);
   app.use("/api/v1/organizations", organizationsRouter);
   app.use("/api/v1/farm-sites", farmSitesRouter);
   app.use("/api/v1/plots", plotsRouter);
