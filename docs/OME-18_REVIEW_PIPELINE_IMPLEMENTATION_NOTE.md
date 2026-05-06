@@ -105,7 +105,9 @@ curl -X POST http://localhost:3000/api/v1/evidence/<EV_ID>/reviews \
   This slice intentionally uses a `controlPointRef` string today so OME-16 can
   layer the strongly-typed FK on top without breaking writers.
 - Mobile UI / camera capture is consumer-side; this is the API surface.
-- Corrective-action workflow (closing the loop on `needs_rework`) is OME-83
-  (PM spec) and will compose with `evidence.reviewStatus = needs_rework`.
+- Corrective-action workflow (closing the loop on `needs_rework`) is OME-83.
+  Phase 1.1 sequencing and schema stance are captured in
+  `docs/OME-83_CORRECTIVE_ACTION_PHASE_1_1_NOTE.md`; it composes with
+  `evidence.reviewStatus = needs_rework`.
 - Reviewer notification fanout (email/push) is deferred to deployment slice
   OME-19.
