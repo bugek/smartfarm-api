@@ -5,6 +5,10 @@ import {
   requireOrganizationRole,
   requireTenantContext
 } from "../../auth/tenant-context.js";
+import {
+  complianceControlPointSummarySelect,
+  complianceSectionSummarySelect
+} from "../../lib/compliance.js";
 import { prisma } from "../../lib/prisma.js";
 
 export const reviewQueueRouter = Router();
@@ -23,6 +27,8 @@ const queueEvidenceSelect = {
   id: true,
   gapRecordId: true,
   controlPointRef: true,
+  complianceSectionVersionId: true,
+  complianceControlPointVersionId: true,
   reviewStatus: true,
   submittedAt: true,
   submittedByUserId: true,
@@ -45,6 +51,12 @@ const queueEvidenceSelect = {
         }
       }
     }
+  },
+  complianceSectionVersion: {
+    select: complianceSectionSummarySelect
+  },
+  complianceControlPointVersion: {
+    select: complianceControlPointSummarySelect
   }
 } satisfies Prisma.EvidenceSelect;
 
@@ -71,13 +83,24 @@ reviewQueueRouter.get("/", async (req, res, next) => {
     if (typeof req.query.controlPointRef === "string") {
       where.controlPointRef = req.query.controlPointRef;
     }
+    if (typeof req.query.complianceSectionVersionId === "string") {
+      where.complianceSectionVersionId = req.query.complianceSectionVersionId;
+    }
+    if (typeof req.query.complianceControlPointVersionId === "string") {
+      where.complianceControlPointVersionId = req.query.complianceControlPointVersionId;
+    }
 
-    // Order: farm site name, then controlPointRef (acts as section sort key),
-    // then oldest submission first so backlog drains FIFO.
+    // Order: farm site name, then typed section/control sequence, with
+    // controlPointRef as the compatibility fallback, then oldest submission
+    // first so backlog drains FIFO.
     const items = await prisma.evidence.findMany({
       where,
       orderBy: [
         { gapRecord: { cropCycle: { farmSite: { name: "asc" } } } },
+        { complianceSectionVersion: { sequence: "asc" } },
+        { complianceSectionVersion: { code: "asc" } },
+        { complianceControlPointVersion: { sequence: "asc" } },
+        { complianceControlPointVersion: { code: "asc" } },
         { controlPointRef: "asc" },
         { submittedAt: "asc" },
         { createdAt: "asc" }
@@ -94,7 +117,13 @@ reviewQueueRouter.get("/", async (req, res, next) => {
 
     res.json({
       organizationId: tenant.organizationId,
-      filter: { status, farmSiteId: req.query.farmSiteId ?? null, controlPointRef: req.query.controlPointRef ?? null },
+      filter: {
+        status,
+        farmSiteId: req.query.farmSiteId ?? null,
+        controlPointRef: req.query.controlPointRef ?? null,
+        complianceSectionVersionId: req.query.complianceSectionVersionId ?? null,
+        complianceControlPointVersionId: req.query.complianceControlPointVersionId ?? null
+      },
       counts: counts.reduce<Record<string, number>>((acc, row) => {
         acc[row.reviewStatus] = row._count._all;
         return acc;

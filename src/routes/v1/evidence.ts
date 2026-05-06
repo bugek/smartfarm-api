@@ -14,6 +14,11 @@ import {
   requireTenantContext
 } from "../../auth/tenant-context.js";
 import { writeAuditEvent } from "../../lib/audit.js";
+import {
+  complianceControlPointSummarySelect,
+  complianceSectionSummarySelect,
+  resolveEvidenceComplianceBinding
+} from "../../lib/compliance.js";
 import { prisma } from "../../lib/prisma.js";
 
 export const evidenceRouter = Router();
@@ -71,6 +76,8 @@ const evidenceSelect = {
   organizationId: true,
   gapRecordId: true,
   controlPointRef: true,
+  complianceSectionVersionId: true,
+  complianceControlPointVersionId: true,
   kind: true,
   storageKey: true,
   fileName: true,
@@ -99,6 +106,12 @@ const evidenceSelect = {
       storageKey: true,
       finalizedAt: true
     }
+  },
+  complianceSectionVersion: {
+    select: complianceSectionSummarySelect
+  },
+  complianceControlPointVersion: {
+    select: complianceControlPointSummarySelect
   }
 } satisfies Prisma.EvidenceSelect;
 
@@ -135,13 +148,40 @@ evidenceRouter.post(
       const tenant = getTenantContext(res);
       const payload = submitEvidenceSchema.parse(req.body);
 
-      const gapRecord = await prisma.gapRecord.findFirst({
-        where: { id: payload.gapRecordId, organizationId: tenant.organizationId },
-        select: { id: true }
+      const complianceBinding = await resolveEvidenceComplianceBinding({
+        organizationId: tenant.organizationId,
+        gapRecordId: payload.gapRecordId,
+        controlPointRef: payload.controlPointRef
       });
-      if (!gapRecord) {
+
+      if (complianceBinding.kind === "gap_record_not_found") {
         return res.status(404).json({
           error: { code: "gap_record_not_found", message: "GAP record not found in this organization." }
+        });
+      }
+      if (complianceBinding.kind === "control_point_mismatch") {
+        return res.status(409).json({
+          error: {
+            code: "control_point_mismatch",
+            message:
+              "controlPointRef does not match the GAP record's bound compliance control.",
+            details: {
+              expectedControlPointRef: complianceBinding.expectedControlPointRef,
+              receivedControlPointRef: complianceBinding.receivedControlPointRef
+            }
+          }
+        });
+      }
+      if (complianceBinding.kind === "compliance_control_binding_missing") {
+        return res.status(409).json({
+          error: {
+            code: "compliance_control_binding_missing",
+            message:
+              "Evidence requires a GAP record bound to a known compliance control or a matching legacy controlPointRef.",
+            details: {
+              lookupControlPointRef: complianceBinding.lookupControlPointRef
+            }
+          }
         });
       }
 
@@ -198,8 +238,10 @@ evidenceRouter.post(
       const evidence = await prisma.evidence.create({
         data: {
           organizationId: tenant.organizationId,
-          gapRecordId: gapRecord.id,
-          controlPointRef: payload.controlPointRef ?? null,
+          gapRecordId: complianceBinding.gapRecordId,
+          controlPointRef: complianceBinding.controlPointRef,
+          complianceSectionVersionId: complianceBinding.complianceSectionVersionId,
+          complianceControlPointVersionId: complianceBinding.complianceControlPointVersionId,
           kind,
           storageKey,
           fileName,
@@ -228,6 +270,8 @@ evidenceRouter.post(
           role: tenant.role,
           gapRecordId: evidence.gapRecordId,
           controlPointRef: evidence.controlPointRef,
+          complianceSectionVersionId: evidence.complianceSectionVersionId,
+          complianceControlPointVersionId: evidence.complianceControlPointVersionId,
           documentId: evidence.documentId,
           hasGeo: evidence.geoLat != null && evidence.geoLng != null,
           capturedAt: evidence.capturedAt?.toISOString() ?? null
@@ -258,6 +302,12 @@ evidenceRouter.get("/", async (req, res, next) => {
     }
     if (typeof req.query.controlPointRef === "string") {
       where.controlPointRef = req.query.controlPointRef;
+    }
+    if (typeof req.query.complianceSectionVersionId === "string") {
+      where.complianceSectionVersionId = req.query.complianceSectionVersionId;
+    }
+    if (typeof req.query.complianceControlPointVersionId === "string") {
+      where.complianceControlPointVersionId = req.query.complianceControlPointVersionId;
     }
 
     const items = await prisma.evidence.findMany({
@@ -320,7 +370,14 @@ evidenceRouter.post(
 
       const evidence = await prisma.evidence.findFirst({
         where: { id: String(req.params.id), organizationId: tenant.organizationId },
-        select: { id: true, reviewStatus: true, gapRecordId: true, controlPointRef: true }
+        select: {
+          id: true,
+          reviewStatus: true,
+          gapRecordId: true,
+          controlPointRef: true,
+          complianceSectionVersionId: true,
+          complianceControlPointVersionId: true
+        }
       });
       if (!evidence) {
         return res.status(404).json({
@@ -372,6 +429,8 @@ evidenceRouter.post(
           reviewId: result.review.id,
           gapRecordId: evidence.gapRecordId,
           controlPointRef: evidence.controlPointRef,
+          complianceSectionVersionId: evidence.complianceSectionVersionId,
+          complianceControlPointVersionId: evidence.complianceControlPointVersionId,
           previousStatus: evidence.reviewStatus,
           nextStatus
         }
