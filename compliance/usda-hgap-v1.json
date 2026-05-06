@@ -1,0 +1,2888 @@
+{
+    "scheme": "USDA_HGAP",
+    "scheme_long_name": "USDA Harmonized Good Agricultural Practices - Field Operations and Harvesting",
+    "version": "3.1",
+    "ruleset_revision": "1.2.0",
+    "effective_date": "2025-07-03",
+    "status": "published",
+    "source_url": "https://www.ams.usda.gov/services/auditing/gap-ghp/harmonized",
+    "source_document": "USDA AMS Harmonized GAP Standard v3.1 + Harmonized GAP Combined Checklist v6.2 (xlsx/pdf), effective 2025-07-03",
+    "license_note": "USDA AMS Harmonized GAP checklist text is U.S. government work and not subject to copyright. Operational paraphrasing in this ruleset is provided for product implementation; for audit-of-record use the canonical USDA AMS source document referenced in source_url.",
+    "scope": {
+        "included_sections": [
+            "General Questions",
+            "Field Operations"
+        ],
+        "excluded_sections_v2_plus": [
+            "Indoor Agriculture",
+            "Post-Harvest / Packing House",
+            "Wholesale Distribution Center",
+            "Preventive Controls"
+        ]
+    },
+    "schema": {
+        "control_point": {
+            "id": "stable dotted identifier, e.g. HGAP.GQ.1.1",
+            "scheme": "always USDA_HGAP for this file",
+            "version": "matches top-level version",
+            "section": "General Questions | Field Operations",
+            "subsection": "human-readable subsection name from source",
+            "title": "short imperative summary",
+            "description": "operational paraphrase of what the control requires",
+            "evidence_required": "boolean - whether at least one evidence artifact must be linked to mark this control met",
+            "expert_review_required": "boolean - whether a GAP expert (not just the farmer) must sign off",
+            "evidence_spec": [
+                {
+                    "kind": "photo | document | note | measurement | log_record",
+                    "guidance": "concrete description of the artifact a farmer/worker should provide"
+                }
+            ],
+            "references": [
+                {
+                    "label": "free-text citation to the source standard",
+                    "locator": "e.g. AMS HGAP G-1.1, page reference, or section number"
+                }
+            ],
+            "ams_ids": "array of verbatim USDA AMS HGAP control identifiers (e.g. [\"G-2.1\"]). Empty array = SmartFarm-added with no direct AMS analogue.",
+            "ams_mapping_note": "optional string explaining bundling, divergence, or SmartFarm additions when the mapping is non-trivial."
+        }
+    },
+    "evidence_kind_vocabulary": {
+        "photo": "Image captured in the field; geotag and timestamp preferred but not required at v1.",
+        "document": "Uploaded file (PDF, image scan, spreadsheet, signed form). Source-of-truth artifact.",
+        "note": "Free-text statement attested by the user; lowest evidentiary weight, often paired with another kind.",
+        "measurement": "Numeric reading with unit and timestamp (e.g. water test ppm, refrigeration temperature).",
+        "log_record": "Structured row in an in-app log (e.g. training attendance, sanitation cleaning, pesticide application)."
+    },
+    "controls": [
+        {
+            "id": "HGAP.FO.1.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Land Use History and Risk Assessment",
+            "title": "Prior land use risk assessment for each production block",
+            "description": "For each field/block, a documented assessment evaluates prior land use (livestock, dumping, flooding, industrial) and any required mitigations before planting.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the land-use history assessment per block, with sources consulted."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "Reviewer note confirming mitigations (if any) are appropriate."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 6",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-1.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 7",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-1.1.a"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 8",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-1.1.b"
+                }
+            ],
+            "ams_ids": [
+                "F-1.1",
+                "F-1.1.a",
+                "F-1.1.b"
+            ],
+            "ams_mapping_note": "Field history risk assessment (F-1.1), per-block risk assessment pre-harvest (F-1.1.a), control measures (F-1.1.b)."
+        },
+        {
+            "id": "HGAP.FO.1.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Land Use History and Risk Assessment",
+            "title": "Adjacent land risk assessment",
+            "description": "Adjacent land uses (livestock operations, water bodies, septic, industrial) are assessed for potential contamination risk and documented mitigations are in place.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload an aerial map of each block annotated with adjacent land uses within ~400 ft."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "Documented mitigations such as buffer strips, fencing, or drainage diversions."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 6",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-1.1"
+                }
+            ],
+            "ams_ids": [
+                "F-1.1"
+            ],
+            "ams_mapping_note": "Adjacent land risk is part of F-1.1 evaluation, not a separate AMS control."
+        },
+        {
+            "id": "HGAP.FO.2.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Agricultural Water - Source",
+            "title": "Water source identified and risk-assessed",
+            "description": "Each water source used for production (irrigation, frost protection, agrochemical mixing) is identified, mapped, and risk-assessed for type and protection level.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload water source map and source-type description (well, surface, municipal, reclaimed)."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the water source risk assessment for each source."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 12",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-2.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 13",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-2.2"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 14",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-2.3"
+                }
+            ],
+            "ams_ids": [
+                "F-2.1",
+                "F-2.2",
+                "F-2.3"
+            ],
+            "ams_mapping_note": "Water system description (F-2.1), regulatory compliance (F-2.2), no cross-connection (F-2.3)."
+        },
+        {
+            "id": "HGAP.FO.2.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Agricultural Water - Testing",
+            "title": "Pre-season and in-season microbial water testing",
+            "description": "Agricultural water used in a way that contacts the harvestable portion is tested for generic E. coli at the frequency required by the source type, with results meeting scheme thresholds.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload accredited lab water test reports for the season."
+                },
+                {
+                    "kind": "measurement",
+                    "guidance": "Enter each test result: source id, sample date, generic E. coli MPN/100mL, lab id."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If any result exceeded the threshold, attach the corrective action record."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 16",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-3.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 19",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-4.2"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 20",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-4.3"
+                }
+            ],
+            "ams_ids": [
+                "F-3.1",
+                "F-4.2",
+                "F-4.3"
+            ],
+            "ams_mapping_note": "Water risk assessment (F-3.1), testing per plan (F-4.2), implementation (F-4.3)."
+        },
+        {
+            "id": "HGAP.FO.2.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Agricultural Water - Distribution",
+            "title": "Water distribution system inspected and maintained",
+            "description": "Irrigation lines, pumps, filters, and backflow prevention devices are inspected on a documented schedule and maintained to prevent contamination.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Inspection/maintenance log entries with date, asset, finding, action."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Optional photos of backflow preventers and filter assemblies in current condition."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 18",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-4.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 50",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-9.5"
+                }
+            ],
+            "ams_ids": [
+                "F-4.1",
+                "F-9.5"
+            ],
+            "ams_mapping_note": "Water management plan (F-4.1) + delivery system condition (F-9.5)."
+        },
+        {
+            "id": "HGAP.FO.2.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Agricultural Water - Crop-Specific Exceptions",
+            "title": "Commodity-specific water testing exceptions documented",
+            "description": "Where a commodity, water source, or application method qualifies for an exception or modified testing frequency under the scheme (e.g. drip irrigation on commodities not normally consumed raw), the exception is documented with the rationale and evidence supporting eligibility.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the documented exception decision: commodity, water source, application method, scheme citation, decision date, signer."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "Reviewer note confirming the exception aligns with scheme/regulatory text."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 23",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-4.6"
+                }
+            ],
+            "ams_ids": [
+                "F-4.6"
+            ],
+            "ams_mapping_note": "Alternative approaches to regulatory water testing (F-4.6) covers crop-specific exceptions."
+        },
+        {
+            "id": "HGAP.FO.3.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Soil Amendments",
+            "title": "Soil amendment inventory and risk classification",
+            "description": "All soil amendments (composts, manures, fertilizers) are inventoried with source, type, treatment status (raw, composted, processed), and intended application areas.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the soil amendment inventory listing all materials used in the season."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "For composted/processed amendments, upload supplier certificate of analysis or process documentation."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 29",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-6.1"
+                }
+            ],
+            "ams_ids": [
+                "F-6.1"
+            ]
+        },
+        {
+            "id": "HGAP.FO.3.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Soil Amendments",
+            "title": "Untreated biological amendment intervals respected",
+            "description": "If untreated or partially treated biological soil amendments of animal origin are used, the documented application-to-harvest interval meets scheme/FSMA requirements for the crop.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Application log: amendment id, block, application date, planned harvest date, interval (days)."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "Reviewer note confirming interval policy is documented if untreated amendments are used."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 30",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-6.2"
+                }
+            ],
+            "ams_ids": [
+                "F-6.2"
+            ]
+        },
+        {
+            "id": "HGAP.FO.4.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Crop Protection - Pesticide Applications",
+            "title": "Pesticide application records",
+            "description": "Each pesticide application is recorded with product, EPA reg number, rate, target pest, applicator, weather, REI, and PHI; records are signed by the applicator.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Pesticide application log per event - all required fields populated."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload current applicator licenses for personnel making restricted-use applications."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 71",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 73",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.3"
+                }
+            ],
+            "ams_ids": [
+                "G-11.1",
+                "G-11.3"
+            ],
+            "ams_mapping_note": "AMS places pesticide application in General (G-11). Application records derive from G-11.1 label compliance + G-11.3 trained applicators."
+        },
+        {
+            "id": "HGAP.FO.4.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Crop Protection - PHI Compliance",
+            "title": "Pre-harvest interval respected",
+            "description": "Harvest does not occur within a product's pre-harvest interval; system enforces or alerts on conflicts between application date and planned harvest date.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Cross-reference of application log and harvest log per block showing interval respected."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If any PHI conflict occurred, attach the corrective action and disposition decision."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 71",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.1"
+                }
+            ],
+            "ams_ids": [
+                "G-11.1"
+            ],
+            "ams_mapping_note": "PHI compliance is part of label compliance under G-11.1."
+        },
+        {
+            "id": "HGAP.FO.4.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Crop Protection - Storage and Mixing",
+            "title": "Pesticide storage and mixing area controls",
+            "description": "Pesticides are stored in a secured, ventilated, signed area separate from food-contact materials; mixing/loading occurs in a designated area with spill-containment provisions.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "photo",
+                    "guidance": "Photos of pesticide storage area showing security, signage, ventilation, and separation."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of mix/load area with spill containment."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload spill response procedure for the mix/load area."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 77",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.6.a"
+                }
+            ],
+            "ams_ids": [
+                "G-11.6.a"
+            ],
+            "ams_mapping_note": "Storage of crop-approved vs. non-crop chemicals separately (G-11.6.a). G-11.6 covers disposal."
+        },
+        {
+            "id": "HGAP.FO.4.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Crop Protection - Equipment Calibration",
+            "title": "Application equipment calibrated on documented schedule",
+            "description": "Pesticide and fertilizer application equipment is calibrated on a documented schedule and after major maintenance, with calibration records retained.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Calibration log per equipment id: date, calibrator, method, result."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 35",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.2.a"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 36",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.2.b"
+                }
+            ],
+            "ams_ids": [
+                "F-7.2.a",
+                "F-7.2.b"
+            ],
+            "ams_mapping_note": "Equipment calibration (F-7.2.a) + traceable calibration standard (F-7.2.b)."
+        },
+        {
+            "id": "HGAP.FO.5.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Animal Intrusion and Wildlife",
+            "title": "Pre-harvest wildlife/animal intrusion inspection",
+            "description": "Each block is inspected for animal intrusion or fecal contamination immediately before harvest; observations and any no-harvest buffers are documented.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Pre-harvest inspection record per block: date, inspector, observations, action taken."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "If contamination observed, photo of the affected area and any flag/buffer placed."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 25",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-5.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 26",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-5.2"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 44",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-8.1"
+                }
+            ],
+            "ams_ids": [
+                "F-5.1",
+                "F-5.2",
+                "F-8.1"
+            ],
+            "ams_mapping_note": "Animal-activity risk assessment (F-5.1), routine monitoring (F-5.2), preharvest risk assessment (F-8.1)."
+        },
+        {
+            "id": "HGAP.FO.5.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Animal Intrusion - Re-entry After Exclusion",
+            "title": "Documented re-entry/release of buffered areas after contamination event",
+            "description": "When an area is excluded from harvest due to animal intrusion, contamination, or other event, a documented re-entry decision (or permanent disposition) is recorded by an authorized reviewer before harvest resumes in that area.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Exclusion-and-release log: block id, exclusion date, reason, area, release date, decision-maker."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Optional supporting evidence (re-inspection record, lab result, photo timeline)."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 27",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-5.3"
+                }
+            ],
+            "ams_ids": [
+                "F-5.3"
+            ],
+            "ams_mapping_note": "Measures to prevent contamination based on animal-activity assessment (F-5.3)."
+        },
+        {
+            "id": "HGAP.FO.6.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Worker Practices",
+            "title": "Harvest worker hygiene practices verified",
+            "description": "Harvest crew follows documented hygiene practices (handwashing on entry/return, glove use as applicable, jewelry policy, no eating in field areas); supervisor verifies daily.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Daily harvest hygiene checklist signed by supervisor."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Optional photo of harvest crew start-of-day handwashing station setup."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 48",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 53",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.6"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 55",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.8"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 63",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.16"
+                }
+            ],
+            "ams_ids": [
+                "G-10.1",
+                "G-10.6",
+                "G-10.8",
+                "G-10.16"
+            ],
+            "ams_mapping_note": "Hygiene policy (G-10.1), facility cleanliness (G-10.6), handwashing (G-10.8), prohibited behaviors in handling areas (G-10.16)."
+        },
+        {
+            "id": "HGAP.FO.6.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Containers and Equipment",
+            "title": "Harvest containers and food-contact surfaces sanitation",
+            "description": "Harvest bins, totes, knives, and other food-contact surfaces are cleaned and sanitized on a documented schedule; damaged or contaminated containers are removed from service.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Container/equipment cleaning and sanitation log: date, equipment, chemical/concentration, signer."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of clean storage area for sanitized containers."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 33",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 34",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.2"
+                }
+            ],
+            "ams_ids": [
+                "F-7.1",
+                "F-7.2"
+            ],
+            "ams_mapping_note": "Equipment cleanliness (F-7.1) + good repair / cleaned (F-7.2)."
+        },
+        {
+            "id": "HGAP.FO.6.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Foreign Material",
+            "title": "Foreign material control during harvest",
+            "description": "A documented procedure addresses glass, hard plastic, metal, and personal item controls during harvest; broken-glass policy and exclusion of personal items from harvest area are enforced.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the foreign material control SOP including broken-glass response."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Foreign material incident log (may be empty if none in period)."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 39",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.4"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 60",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-11.3"
+                }
+            ],
+            "ams_ids": [
+                "F-7.4",
+                "F-11.3"
+            ],
+            "ams_mapping_note": "Equipment as physical-hazard source (F-7.4) + harvest inspection for physical hazards (F-11.3)."
+        },
+        {
+            "id": "HGAP.FO.6.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Water and Ice Use",
+            "title": "Water and ice used during harvest meets potability requirements",
+            "description": "Any water or ice used during harvest that contacts produce or food-contact surfaces is potable; potability is documented through source qualification and routine testing where required.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload water/ice source description and potability documentation (municipal report, well test, or supplier certificate)."
+                },
+                {
+                    "kind": "measurement",
+                    "guidance": "Routine test results for harvest-use water (e.g. coliform, sanitizer concentration if applicable)."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 46",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-9.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 47",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-9.2"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 48",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-9.3"
+                }
+            ],
+            "ams_ids": [
+                "F-9.1",
+                "F-9.2",
+                "F-9.3"
+            ],
+            "ams_mapping_note": "Harvest water procedures (F-9.1), microbial quality (F-9.2), antimicrobial treatment (F-9.3)."
+        },
+        {
+            "id": "HGAP.FO.6.5",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Packaging Materials in Field",
+            "title": "Field packaging materials are food-grade and stored protected",
+            "description": "Cartons, liners, clamshells, and other primary packaging used in the field are food-grade, stored off the ground and protected from contamination, pests, and weather between use.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload supplier food-grade certification / spec sheet for packaging materials in use."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of in-field packaging storage showing pallets, covers, and protection."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 62",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-11.5"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 63",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-11.6"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 64",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-11.7"
+                }
+            ],
+            "ams_ids": [
+                "F-11.5",
+                "F-11.6",
+                "F-11.7"
+            ],
+            "ams_mapping_note": "Packaging fit-for-use (F-11.5), stored to minimize contamination (F-11.6), policy on direct soil contact (F-11.7)."
+        },
+        {
+            "id": "HGAP.FO.6.6",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Product Disposition",
+            "title": "Visibly contaminated or decayed produce is culled from harvest",
+            "description": "The operation has a written harvest rule that visibly contaminated, damaged, or decayed produce is not harvested for sale, or is immediately culled from product intended for sale.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the harvest SOP or crew instruction stating that visibly contaminated, damaged, or decayed produce is not harvested or is culled."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Crew training or supervisor verification record showing the rule was communicated for the current season."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 58",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-11.1"
+                }
+            ],
+            "ams_ids": [
+                "F-11.1"
+            ]
+        },
+        {
+            "id": "HGAP.FO.6.7",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Product Disposition",
+            "title": "Ground-contact produce is not harvested unless normal for the crop",
+            "description": "Produce that contacted the ground is not harvested unless ground contact is normal for that commodity and the operation has defined the acceptable handling practice for that crop.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the harvest policy describing the ground-contact rule and any commodity-specific exception."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Supervisor or harvest checklist record showing the ground-contact rule was checked during harvest."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 59",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-11.2"
+                }
+            ],
+            "ams_ids": [
+                "F-11.2"
+            ]
+        },
+        {
+            "id": "HGAP.FO.7.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Lot Identification",
+            "title": "Harvest lot coding applied at point of harvest",
+            "description": "Each harvested lot is assigned a unique code at the point of harvest tying it to field/block, harvest date, and crew, enabling traceability per G-4.1.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Harvest log with lot code per harvest event."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of representative lot tag/label as applied to a bin or pallet."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 65",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-11.8.a"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 31",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-6.1"
+                }
+            ],
+            "ams_ids": [
+                "F-11.8.a",
+                "G-6.1"
+            ],
+            "ams_mapping_note": "Product release procedure (F-11.8.a) + traceability program (G-6.1)."
+        },
+        {
+            "id": "HGAP.FO.8.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Field Sanitation Facilities",
+            "title": "Field toilet and handwashing placement and counts",
+            "description": "Field toilets and handwashing units are provided in compliance with applicable labor law ratios (e.g. one per 20 workers, within a quarter-mile), and serviced on a documented schedule.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload field map showing locations of toilets/handwash units relative to crews."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Servicing/cleaning log from the provider."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 51",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.4"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 53",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.6"
+                }
+            ],
+            "ams_ids": [
+                "G-10.4",
+                "G-10.6"
+            ],
+            "ams_mapping_note": "Toilet accessibility (G-10.4) + clean condition (G-10.6). AMS leaves count/placement to \"easily accessible\" + prevailing regulation."
+        },
+        {
+            "id": "HGAP.FO.8.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Field Sanitation - Sewage Spill Response",
+            "title": "Sewage/wastewater spill response procedure",
+            "description": "A documented procedure exists for handling sewage spills from field toilets, including no-harvest buffer determination and product disposition.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the sewage spill response SOP."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Spill response log entries (may be empty)."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 54",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.7"
+                }
+            ],
+            "ams_ids": [
+                "G-10.7"
+            ]
+        },
+        {
+            "id": "HGAP.FO.9.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Transportation from Field",
+            "title": "Field transport vehicles inspected and clean",
+            "description": "Vehicles transporting harvested product from the field are inspected for cleanliness and absence of contaminants before loading, with results recorded.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Transport pre-load inspection log: date, vehicle id, inspector, condition, action."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Optional photo of cleaned trailer/bed before loading."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 71",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-13.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 72",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-13.2"
+                }
+            ],
+            "ams_ids": [
+                "F-13.1",
+                "F-13.2"
+            ],
+            "ams_mapping_note": "Shipping equipment cleanliness checklist (F-13.1) + load/unload damage prevention (F-13.2)."
+        },
+        {
+            "id": "HGAP.FO.10.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Temperature and Cooling (Field Cooling)",
+            "title": "Field/initial cooling temperature monitoring (if applicable)",
+            "description": "If field cooling or initial cooling occurs as part of field operations, target temperatures are defined per commodity and monitored with calibrated devices, with deviations recorded.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the cooling SOP with commodity-specific target temperatures."
+                },
+                {
+                    "kind": "measurement",
+                    "guidance": "Cooling temperature readings: lot, time, temperature, instrument id."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload most recent thermometer calibration record."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 67",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-12.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 68",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-12.1.a"
+                }
+            ],
+            "ams_ids": [
+                "F-12.1",
+                "F-12.1.a"
+            ],
+            "ams_mapping_note": "Post-harvest handling not contaminated (F-12.1) + clean field-pack collection points (F-12.1.a). Full cooling temperature controls live in Post-Harvest module (v2 scope)."
+        },
+        {
+            "id": "HGAP.FO.1.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Land Use History and Risk Assessment",
+            "title": "Indoor growing and field storage structures prevent produce contamination",
+            "description": "Where indoor growing rooms or field storage buildings are used, they are constructed, maintained, and kept clean in a manner that prevents contamination of produce.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the building inspection or preventive-maintenance checklist for any indoor growing or field storage structures used by the operation."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Current photos showing clean condition, intact surfaces, and protected produce storage inside the relevant structure."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If the operation does not use indoor growing or field storage buildings, add a reviewer note documenting the not-applicable basis."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 9",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-1.2"
+                }
+            ],
+            "ams_ids": [
+                "F-1.2"
+            ],
+            "ams_mapping_note": "Conditional-in-practice row. This control is reviewed only when indoor growing or field storage buildings are part of the operation."
+        },
+        {
+            "id": "HGAP.FO.1.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Land Use History and Risk Assessment",
+            "title": "Sewage and septic systems are maintained to avoid contamination",
+            "description": "Sewage lines, septic systems, and related drainage infrastructure are maintained and inspected so they do not become a source of produce or field contamination.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the map or maintenance record identifying septic tanks, sewer connections, and other wastewater infrastructure relevant to production or field storage areas."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Inspection or service log entries showing condition checks, pumping/service dates, repairs, and any corrective action."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 10",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-1.3"
+                }
+            ],
+            "ams_ids": [
+                "F-1.3"
+            ]
+        },
+        {
+            "id": "HGAP.FO.2.5",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Agricultural Water - Treatment",
+            "title": "Agricultural water treatment is approved, effective, and monitored",
+            "description": "If agricultural water is treated to meet the operation?s microbiological criteria, the treatment method is approved for its intended use, validated or otherwise justified, and monitored on a defined schedule.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the water treatment SOP identifying the treatment method, target water use, approval/registration basis, and monitoring frequency."
+                },
+                {
+                    "kind": "measurement",
+                    "guidance": "Enter treatment monitoring records such as sanitizer concentration, UV intensity, ORP, contact time, or other operational checks used to verify effectiveness."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If no water treatment is used, add a reviewer note documenting the not-applicable basis."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 21",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-4.4"
+                }
+            ],
+            "ams_ids": [
+                "F-4.4"
+            ],
+            "ams_mapping_note": "Conditional-in-practice row for operations that treat agricultural water to meet microbial criteria."
+        },
+        {
+            "id": "HGAP.FO.2.6",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Agricultural Water - Treatment",
+            "title": "Microbial die-off intervals are supported by documented justification",
+            "description": "If the operation relies on microbial die-off between water application and harvest to meet microbial criteria, the interval and supporting scientific or regulatory basis are documented.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the written die-off policy showing the interval used, crop/water application context, and the scientific, regulatory, or scheme basis supporting the interval."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Application-to-harvest records showing the relevant irrigation/application date, harvest date, and calculated interval for affected lots or blocks."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If microbial die-off is not used as a control measure, add a reviewer note documenting the not-applicable basis."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 22",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-4.5"
+                }
+            ],
+            "ams_ids": [
+                "F-4.5"
+            ],
+            "ams_mapping_note": "Conditional-in-practice row for operations using microbial die-off as part of the water management approach."
+        },
+        {
+            "id": "HGAP.FO.3.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Soil Amendments",
+            "title": "Non-animal-origin growing media are suitable and handled hygienically",
+            "description": "If alternative growing media, soil-less media, or non-animal-origin substrates are used, they are suitable for the crop and are stored and handled to minimize contamination risk.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the media/substrate inventory or specification sheet identifying each non-animal-origin growing medium used and its intended crop/use."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of media or substrate storage showing protection from water intrusion, pests, and obvious contamination."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If the operation does not use alternative or soil-less media, add a reviewer note documenting the not-applicable basis."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 31",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-6.3"
+                }
+            ],
+            "ams_ids": [
+                "F-6.3"
+            ],
+            "ams_mapping_note": "Conditional-in-practice row for operations that use alternative or soil-less growing media."
+        },
+        {
+            "id": "HGAP.FO.6.8",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Containers and Equipment",
+            "title": "Sanitation effectiveness is verified for harvest equipment and food-contact surfaces",
+            "description": "The cleaning and sanitation program for harvest equipment, tools, containers, and other produce-contact surfaces includes documented checks that verify the sanitation steps were effective.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the sanitation verification procedure describing what is checked, how often, and who signs off."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Sanitation verification records such as pre-op inspections, ATP/swab checks if used, visual verification, or supervisor sign-off."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 37",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.2.c"
+                }
+            ],
+            "ams_ids": [
+                "F-7.2.c"
+            ]
+        },
+        {
+            "id": "HGAP.FO.6.9",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Containers and Equipment",
+            "title": "Equipment chemical hazards and cleaning-chemistry contamination risks are controlled",
+            "description": "Vehicles, equipment, tools, utensils, and cleaning/sanitizing practices are controlled so fuel, lubricants, residues, or cleaning chemistry do not contaminate produce or food-contact surfaces.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the SOP covering approved lubricants/chemicals, rinsing or drain-down steps, and how chemical contamination risks are prevented during cleaning and use."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Inspection or pre-op records showing the equipment was checked for chemical residues, leaks, or improper cleaning setup before use."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 38",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.3"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 40",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.5"
+                }
+            ],
+            "ams_ids": [
+                "F-7.3",
+                "F-7.5"
+            ],
+            "ams_mapping_note": "Bundles chemical-hazard control for equipment/tools (F-7.3) with the requirement that cleaning and sanitizing procedures themselves do not contaminate product (F-7.5)."
+        },
+        {
+            "id": "HGAP.FO.6.10",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Containers and Equipment",
+            "title": "Water tanks used in field operations are cleaned on a documented schedule",
+            "description": "Water tanks used in field operations are cleaned often enough to prevent contamination, and the cleaning frequency and method are documented.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the SOP or schedule defining how often field water tanks are cleaned and what cleaning method is used."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Water tank cleaning records with tank id, date, method, sanitizer/chemical if used, and signer."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 41",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-7.6"
+                }
+            ],
+            "ams_ids": [
+                "F-7.6"
+            ]
+        },
+        {
+            "id": "HGAP.FO.6.11",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Water and Ice Use",
+            "title": "Reused produce-contact water is treated with an approved antimicrobial process",
+            "description": "If water contacting produce or food-contact surfaces is re-used, the operation treats it with a registered or approved antimicrobial process or chemical treatment and documents the operational checks that keep the treatment effective.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the re-used water treatment SOP identifying where water is re-used, the antimicrobial process or chemistry used, and the approval/registration basis."
+                },
+                {
+                    "kind": "measurement",
+                    "guidance": "Enter operational treatment checks for re-used water such as sanitizer concentration, ORP, pH, contact time, or equivalent monitoring used by the operation."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If produce-contact water is not re-used, add a reviewer note documenting the not-applicable basis."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 49",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-9.4"
+                }
+            ],
+            "ams_ids": [
+                "F-9.4"
+            ],
+            "ams_mapping_note": "Conditional-in-practice row for operations that re-use water contacting produce or food-contact surfaces."
+        },
+        {
+            "id": "HGAP.FO.6.12",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Water and Ice Use",
+            "title": "Wash water temperature controls are documented when commodity risk requires them",
+            "description": "Where commodity-specific wash water temperature control is needed to avoid infiltration or other contamination risk, the SOP defines the target control method and the operation records the relevant checks.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the water-use or washing SOP that defines the commodity-specific wash water temperature control method and acceptance criteria."
+                },
+                {
+                    "kind": "measurement",
+                    "guidance": "Wash water temperature records with lot or line, date/time, water temperature, produce temperature if used, and operator initials."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If the commodity or process does not require wash water temperature control, add a reviewer note documenting the not-applicable basis."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 51",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-9.6"
+                }
+            ],
+            "ams_ids": [
+                "F-9.6"
+            ],
+            "ams_mapping_note": "Conditional-in-practice row tied to commodities/processes where wash water temperature control is relevant."
+        },
+        {
+            "id": "HGAP.FO.6.13",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Containers and Equipment",
+            "title": "Harvest containers are stored protected, inspected before use, and dedicated to harvest use",
+            "description": "The operation has a written container policy covering protected storage, pre-use inspection, acceptable container condition, and prohibition on using harvest containers for non-harvest purposes.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the harvest-container SOP or policy covering storage, inspection criteria, acceptable condition, and non-harvest-use prohibition."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Pre-use container inspection records showing the date, container type or lot, inspector, condition, and disposition of rejected containers."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of the container storage area showing protected storage and separation from chemicals, waste, or non-harvest uses."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 53",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-10.1"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 54",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-10.2"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 55",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-10.3"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 56",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-10.4"
+                }
+            ],
+            "ams_ids": [
+                "F-10.1",
+                "F-10.2",
+                "F-10.3",
+                "F-10.4"
+            ],
+            "ams_mapping_note": "Bundles the written policy requirements for harvest-container storage (F-10.1), pre-use inspection (F-10.2), acceptable condition (F-10.3), and prohibition on non-harvest use (F-10.4)."
+        },
+        {
+            "id": "HGAP.FO.6.14",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "Field Operations",
+            "subsection": "Harvest - Product Disposition",
+            "title": "Produce-contact materials are clean, serviceable, and controlled against cross-contamination",
+            "description": "Cloths, towels, pads, liners, and other materials that contact produce are kept clean and in good repair, and the operation does not use wiping or cleaning materials in a way that creates cross-contamination risk unless documented mitigation procedures are in place.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the SOP or work instruction describing approved produce-contact materials, replacement criteria, and any controlled use of cloths or towels around produce."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Inspection or replacement records showing produce-contact materials were checked for cleanliness and condition before use."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 61",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-11.4"
+                },
+                {
+                    "locator": "Checklist-Field Ops (xl/worksheets/sheet6.xml) row 69",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, F-12.2"
+                }
+            ],
+            "ams_ids": [
+                "F-11.4",
+                "F-12.2"
+            ],
+            "ams_mapping_note": "Bundles the cloth/towel cross-contamination control (F-11.4) with the broader requirement that produce-contact materials are clean and in good repair (F-12.2)."
+        },
+        {
+            "id": "HGAP.GQ.1.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Documented food safety program exists",
+            "description": "The operation maintains a written food safety program covering the scope of the operation, reviewed at least annually and signed by responsible management.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the current food safety program / manual (PDF or scanned)."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the signed annual review/approval cover page showing date and signer."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 12",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-2.1"
+                }
+            ],
+            "ams_ids": [
+                "G-2.1"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.1.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Designated food safety responsible person",
+            "description": "A specific individual is designated responsible for the food safety program with documented authority and qualifications.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload role designation letter, org chart, or job description naming the responsible person."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload qualifications/training certificates of the designated person (e.g. PSA Grower Training)."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 8",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-1.2"
+                }
+            ],
+            "ams_ids": [
+                "G-1.2"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.1.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Annual internal self-audit completed",
+            "description": "The operation conducts an internal self-audit at least annually against this scheme and documents findings and corrective actions.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the most recent internal self-audit report with date."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the corrective action log showing closure of any findings."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 46",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-9.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 13",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-2.2"
+                }
+            ],
+            "ams_ids": [
+                "G-9.1",
+                "G-2.2"
+            ],
+            "ams_mapping_note": "G-9.1 self-audit + G-2.2 annual review of plan."
+        },
+        {
+            "id": "HGAP.GQ.1.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Food safety policy and measurable objectives are documented",
+            "description": "The operation maintains a written food safety policy that states management commitment and includes measurable objectives for protecting product safety.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the signed food safety policy statement."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the current food safety objectives or KPI sheet linked to the policy."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 6",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-1.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 7",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-1.1.a"
+                }
+            ],
+            "ams_ids": [
+                "G-1.1",
+                "G-1.1.a"
+            ],
+            "ams_mapping_note": "Bundles the written policy requirement (G-1.1) with its measurable-objectives requirement (G-1.1.a)."
+        },
+        {
+            "id": "HGAP.GQ.1.5",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Food safety roles and reporting structure are defined",
+            "description": "The food safety plan documents the organizational structure for staff whose activities affect food safety, including reporting lines and delegated coverage when the primary lead is unavailable.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the organization chart or responsibility matrix for food-safety-affecting roles."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the food safety plan page showing the reporting structure and alternates."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 9",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-1.2.a"
+                }
+            ],
+            "ams_ids": [
+                "G-1.2.a"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.1.6",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Worker food-safety violations trigger documented corrective action",
+            "description": "The operation has a policy describing how food safety violations by employees and workers are documented, corrected, and escalated when repeated or severe.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the disciplinary or corrective action policy covering food safety violations."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Corrective action records for any food-safety-related personnel violations in the audit period, or reviewer note that none occurred."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 10",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-1.3"
+                }
+            ],
+            "ams_ids": [
+                "G-1.3"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.1.7",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Approved supplier program for incoming materials",
+            "description": "Incoming materials that can affect food safety, including packaging, soil amendments, and alternative growing media, are sourced only from approved suppliers and are periodically re-evaluated.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the approved supplier list for packaging, soil amendments, and other incoming materials."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload one recent approval or re-approval record for a supplier in scope."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 14",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-2.3"
+                }
+            ],
+            "ams_ids": [
+                "G-2.3"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.1.8",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Approved service provider program",
+            "description": "Services that may affect food safety are covered by a documented approval process with written criteria for evaluation, approval, and continued monitoring of the provider.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the approved services list and written evaluation criteria."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload one recent approval, contract, or monitoring record for a service provider that affects food safety."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 15",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-2.4"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 16",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-2.4.a"
+                }
+            ],
+            "ams_ids": [
+                "G-2.4",
+                "G-2.4.a"
+            ],
+            "ams_mapping_note": "Bundles the approved-services requirement (G-2.4) with the written provider evaluation/monitoring procedure (G-2.4.a)."
+        },
+        {
+            "id": "HGAP.GQ.1.9",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Safety Program",
+            "title": "Laboratory testing program uses qualified methods and response rules",
+            "description": "When the food safety plan requires laboratory or microbiological testing, the operation uses qualified laboratories and sampling procedures, keeps the records, and documents the actions to take for out-of-specification results.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "If testing is required by the food safety plan, upload the testing SOP naming the laboratory, methods, and sampling procedure."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "If testing is required, upload one recent laboratory report and the follow-up action taken when results were outside limits, if any."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "If the food safety plan does not require laboratory analysis, reviewer records a not-applicable determination citing the relevant food safety plan section."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 27",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-5.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 28",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-5.2"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 29",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-5.3"
+                }
+            ],
+            "ams_ids": [
+                "G-5.1",
+                "G-5.2",
+                "G-5.3"
+            ],
+            "ams_mapping_note": "Temporary Phase 4.1 fallback until applicability_condition support ships: mark this control not applicable only when the approved food safety plan does not require laboratory analysis."
+        },
+        {
+            "id": "HGAP.GQ.2.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Training",
+            "title": "Food safety and hygiene training for all workers",
+            "description": "All workers (including seasonal and contract) receive food safety and personal hygiene training appropriate to their tasks before starting work and at least annually thereafter.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Worker training log with worker name, date, topics covered, trainer, and language used."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the training curriculum or outline."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Optional: photo of attendance sign-in sheet."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 23",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-4.1"
+                }
+            ],
+            "ams_ids": [
+                "G-4.1"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.2.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Training",
+            "title": "Targeted training for harvest crew and food-contact roles",
+            "description": "Workers handling produce, harvest tools, or food-contact surfaces receive role-specific training on contamination prevention, glove/hairnet use, and reporting illness.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Role-specific training records identifying the harvest/handling crew."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the role-specific lesson plan or SOP used during training."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 24",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-4.2"
+                }
+            ],
+            "ams_ids": [
+                "G-4.2"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.2.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Training",
+            "title": "Visitor food safety policy",
+            "description": "Visitors entering production or harvest areas are informed of and follow food safety and hygiene rules.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the visitor policy document or visitor sign-in form template."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Visitor log entries for the audit period."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 49",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.2"
+                }
+            ],
+            "ams_ids": [
+                "G-10.2"
+            ],
+            "ams_mapping_note": "AMS folds visitor hygiene into G-10.2 (employees, workers, AND visitors)."
+        },
+        {
+            "id": "HGAP.GQ.2.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Training",
+            "title": "Training delivered in language workers understand",
+            "description": "All food safety, hygiene, and role-specific training is delivered in a language and at a literacy level the workers understand; the language used is recorded for each session.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Training log entry must capture language used and any interpreter assistance."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload translated training materials if non-English workforce."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "n/a",
+                    "label": "No direct USDA AMS HGAP base control. SmartFarm-added control; see ams_mapping_note."
+                }
+            ],
+            "ams_ids": [],
+            "ams_mapping_note": "No direct AMS analogue. SmartFarm-added control to ensure G-4.1 training is delivered in a language workers understand. Maria-pilot hard requirement."
+        },
+        {
+            "id": "HGAP.GQ.2.5",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Contractor and Labor Provider Agreements",
+            "title": "Labor contractor food-safety agreements",
+            "description": "Each farm-labor contractor or third-party crew supplier has a written agreement that flows down the operation's food safety, hygiene, training, and illness reporting requirements.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload signed contractor agreement(s) with food-safety addendum."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload contractor's training records or attestation that workers have received required training."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 25",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-4.3"
+                }
+            ],
+            "ams_ids": [
+                "G-4.3"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.3.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Health and Hygiene",
+            "title": "Illness and injury reporting policy",
+            "description": "Workers are required to report symptoms of communicable illness, open wounds, and infections; documented procedure exists for reassignment or exclusion.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the written illness/injury reporting and exclusion policy."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Log of reported illness/injury events and actions taken (may be empty if none in period)."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 66",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.19"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 67",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.20"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 68",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.21"
+                }
+            ],
+            "ams_ids": [
+                "G-10.19",
+                "G-10.20",
+                "G-10.21"
+            ],
+            "ams_mapping_note": "Bundles AMS illness exclusion (G-10.19), open-cuts exclusion (G-10.20), and blood/bodily-fluids policy (G-10.21)."
+        },
+        {
+            "id": "HGAP.GQ.3.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Health and Hygiene",
+            "title": "Toilet and handwashing facilities accessible, stocked, and posted",
+            "description": "Adequate, clean, accessible toilet and handwashing facilities are provided for all workers, with soap, single-use towels, potable water, handwashing signage, and acceptable toilet tissue disposal practices.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of each toilet/handwashing station serving the field, showing soap, towels, handwashing signage, and acceptable waste setup."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Cleaning/restocking log for the facilities during the season, including checks that signage remained posted."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 48",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 50",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.3"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 51",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.4"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 52",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.5"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 53",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.6"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 56",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.9"
+                }
+            ],
+            "ams_ids": [
+                "G-10.1",
+                "G-10.3",
+                "G-10.4",
+                "G-10.5",
+                "G-10.6",
+                "G-10.9"
+            ],
+            "ams_mapping_note": "Bundles AMS hygiene policy (G-10.1), facility design (G-10.3), accessibility (G-10.4), toilet tissue disposal (G-10.5), cleanliness (G-10.6), and posted handwashing signage (G-10.9)."
+        },
+        {
+            "id": "HGAP.GQ.3.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Health and Hygiene",
+            "title": "First-aid kits available",
+            "description": "Stocked first-aid kits are available at production and harvest locations, with inventory checks documented.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of each first-aid kit at its on-site location, contents visible."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "First-aid kit inspection/restock log."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 69",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.22"
+                }
+            ],
+            "ams_ids": [
+                "G-10.22"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.3.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Health and Hygiene",
+            "title": "Worker clothing, gloves, jewelry, and hair controls enforced",
+            "description": "The operation enforces hygiene rules for clothing and footwear condition, glove use when gloves are worn, handling of protective outer garments, jewelry and loose objects, and hair coverings where required by policy or regulation.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the personal hygiene policy covering clothing, gloves, outer garments, jewelry, and hair coverings."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo or training visual showing the required worker attire for product-handling activities."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 57",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.10"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 58",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.11"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 59",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.12"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 60",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.13"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 61",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.14"
+                }
+            ],
+            "ams_ids": [
+                "G-10.10",
+                "G-10.11",
+                "G-10.12",
+                "G-10.13",
+                "G-10.14"
+            ],
+            "ams_mapping_note": "Bundles clothing/footwear (G-10.10), glove use (G-10.11), protective outer garments (G-10.12), jewelry/loose objects (G-10.13), and hair-covering controls (G-10.14)."
+        },
+        {
+            "id": "HGAP.GQ.3.5",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Worker Health and Hygiene",
+            "title": "Personal belongings, break areas, and drinking water are controlled",
+            "description": "Workers store personal belongings only in designated areas, take breaks in locations that do not contaminate product, and have access to drinking water during field work.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the worker hygiene or camp rules covering designated storage areas, break areas, and drinking water provision."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of the designated break area, personal-belongings storage area, and drinking-water setup used for the crew."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 62",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.15"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 64",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.17"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 65",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-10.18"
+                }
+            ],
+            "ams_ids": [
+                "G-10.15",
+                "G-10.17",
+                "G-10.18"
+            ],
+            "ams_mapping_note": "Bundles designated storage for belongings (G-10.15), break-area contamination prevention (G-10.17), and drinking water availability (G-10.18)."
+        },
+        {
+            "id": "HGAP.GQ.4.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Traceability",
+            "title": "One-step-back / one-step-forward traceability",
+            "description": "The operation can identify, for any harvested lot, its origin (field/block/date) and the immediate next recipient, within a defined time target (commonly 4 hours).",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the written traceability procedure including the lot-coding scheme."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Sample lot record linking field, harvest date, and shipped customer."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 31",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-6.1"
+                }
+            ],
+            "ams_ids": [
+                "G-6.1"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.4.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Traceability",
+            "title": "Annual traceability mock recall exercise",
+            "description": "A mock recall or traceability test is conducted at least annually, with documented timing, scope, and corrective actions for any gaps.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the mock recall report including start time, end time, lot tested, and outcome."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 39",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-7.3"
+                }
+            ],
+            "ams_ids": [
+                "G-7.3"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.4.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Traceability - Lot Coding Scheme",
+            "title": "Lot coding scheme documented and consistently applied",
+            "description": "The lot-coding scheme is documented (structure, fields encoded, format) and consistently applied across harvest, storage, and shipment records to enable rapid forward and backward trace.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the lot code specification (fields, format, examples)."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Sample of recent lot codes from harvest, storage, and shipping records showing consistent format."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 32",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-6.1.a"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 33",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-6.1.b"
+                }
+            ],
+            "ams_ids": [
+                "G-6.1.a",
+                "G-6.1.b"
+            ],
+            "ams_mapping_note": "Packaging product identification (G-6.1.a) + export labeling (G-6.1.b)."
+        },
+        {
+            "id": "HGAP.GQ.4.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Traceability",
+            "title": "Farm stand and CSA distribution records are traceable",
+            "description": "If the operation supplies product to a farm stand or CSA through a post-harvest operation, it keeps records linking the product from that operation to the destination outlet or program.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the SOP describing how farm stand or CSA shipments are traced."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Provide one example record linking a lot from the post-harvest operation to a farm stand or CSA delivery."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 34",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-6.1.c"
+                }
+            ],
+            "ams_ids": [
+                "G-6.1.c"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.4.5",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Traceability",
+            "title": "Annual trace-back and trace-forward exercise completed",
+            "description": "At least annually, the operation performs a documented trace exercise that proves both backward trace to source and forward trace to the next recipient.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the annual trace exercise report showing the lot chosen, timing, results, and any gaps identified."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 35",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-6.2"
+                }
+            ],
+            "ams_ids": [
+                "G-6.2"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.5.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Recall Program",
+            "title": "Written recall procedure",
+            "description": "A documented recall procedure identifies the recall coordinator, communication tree, customer notification process, and product disposition rules.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the current recall procedure document."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the recall team contact list with phone numbers and roles."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 37",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-7.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 38",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-7.2"
+                }
+            ],
+            "ams_ids": [
+                "G-7.1",
+                "G-7.2"
+            ],
+            "ams_mapping_note": "G-7.1 documented recall program + G-7.2 designated recall team."
+        },
+        {
+            "id": "HGAP.GQ.5.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Corrective Action and Complaints",
+            "title": "Corrective action, complaint, and incident procedure maintained",
+            "description": "The operation has documented procedures for corrective action, complaint evaluation, and food safety incident management, including recording severity, risk, disposition, and closure of actions taken.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the corrective action / complaint / incident procedure."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Corrective action and complaint log for the audit period, including investigation outcome and closure date."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 41",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-8.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 42",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-8.1.a"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 43",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-8.1.b"
+                }
+            ],
+            "ams_ids": [
+                "G-8.1",
+                "G-8.1.a",
+                "G-8.1.b"
+            ],
+            "ams_mapping_note": "Bundles the base corrective action procedure (G-8.1), complaint evaluation (G-8.1.a), and documented food safety incident management (G-8.1.b)."
+        },
+        {
+            "id": "HGAP.GQ.5.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Corrective Action and Complaints",
+            "title": "Non-conforming product is put on hold and segregated",
+            "description": "Product placed on hold for food safety reasons is clearly identified and physically or procedurally segregated from acceptable product and packaging materials until disposition is authorized.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the hold-and-release or non-conforming product SOP."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo or example label showing how on-hold product is identified and segregated."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Hold log or disposition record for any product placed on hold during the audit period, or reviewer note that none occurred."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 44",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-8.2"
+                }
+            ],
+            "ams_ids": [
+                "G-8.2"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.6.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Hazard Analysis and Risk Assessment",
+            "title": "Documented hazard analysis for the operation",
+            "description": "The operation has performed and documented a hazard analysis covering biological, chemical, and physical hazards relevant to its commodities, sites, and processes.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the hazard analysis covering each commodity/site."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "Reviewer note confirming hazards align with commodity-specific guidance (e.g. FDA Produce Safety Rule)."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 12",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-2.1"
+                }
+            ],
+            "ams_ids": [
+                "G-2.1"
+            ],
+            "ams_mapping_note": "AMS HGAP does not require formal HACCP-style hazard analysis; the Food Safety Plan (G-2.1) is the carrier. Treat hazard analysis as a section of the plan."
+        },
+        {
+            "id": "HGAP.GQ.6.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Hazard Analysis and Risk Assessment",
+            "title": "Annual review of hazard analysis",
+            "description": "The hazard analysis is reviewed and re-approved at least annually and whenever a significant operational change occurs (new commodity, new site, new water source, new amendment supplier).",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload annual hazard analysis review record with date and reviewer signature."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Log of operational changes during the period and the corresponding hazard-analysis updates."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 13",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-2.2"
+                }
+            ],
+            "ams_ids": [
+                "G-2.2"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.7.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Records and Documentation",
+            "title": "Records retained for minimum two years",
+            "description": "All food safety records (training, applications, water tests, cleaning, traceability) are retained for at least two years and are accessible during audit.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the records retention policy stating the two-year minimum."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "Reviewer attests sample records from prior year were retrievable."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 18",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-3.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 19",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-3.2"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 20",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-3.3"
+                }
+            ],
+            "ams_ids": [
+                "G-3.1",
+                "G-3.2",
+                "G-3.3"
+            ],
+            "ams_mapping_note": "Documentation maintained (G-3.1), readily available (G-3.2), retained 2 years (G-3.3)."
+        },
+        {
+            "id": "HGAP.GQ.7.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Records and Documentation",
+            "title": "Food safety records are securely stored and controlled",
+            "description": "Food safety plan documents and records are stored securely, protected from loss or unauthorized change, and controlled so the current approved version can be identified and retrieved.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the document control or records security procedure."
+                },
+                {
+                    "kind": "note",
+                    "guidance": "Reviewer note describing how current versions, backups, or restricted access are controlled for the records system in use."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 21",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-3.3.a"
+                }
+            ],
+            "ams_ids": [
+                "G-3.3.a"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.8.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Pest Control (SmartFarm-added)",
+            "title": "Pest monitoring program in production and storage areas",
+            "description": "The operation maintains a pest monitoring program for production, storage, and adjacent support areas. In ruleset revision 1.1.0 this control is retained only as a SmartFarm-added add-on and is not part of the AMS G-8 corrective action cluster.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload pest control site map showing trap/bait locations."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Pest monitoring inspection log with date, station, findings."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "If a third-party PCO is used, upload their service contract and the most recent service report."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "n/a",
+                    "label": "No direct USDA AMS HGAP base control. SmartFarm-added control; see ams_mapping_note."
+                }
+            ],
+            "ams_ids": [],
+            "ams_mapping_note": "Deprecated in the 1.1.0 release line for namespace clarity: this SmartFarm-added pest-monitoring control is retained temporarily for pilot continuity but is not an AMS G-8 control and should move to a future IPM addendum."
+        },
+        {
+            "id": "HGAP.GQ.9.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Chemical and Allergen Controls",
+            "title": "Approved chemicals list maintained",
+            "description": "Only approved cleaning, sanitizing, and pest control chemicals are used; an inventory list with SDS sheets is maintained and accessible.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the approved chemicals list."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload SDS sheets for each chemical (one document or a folder)."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 71",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 72",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.2"
+                }
+            ],
+            "ams_ids": [
+                "G-11.1",
+                "G-11.2"
+            ],
+            "ams_mapping_note": "Pesticide label compliance (G-11.1) + MRL consideration (G-11.2). Allergen controls are not an AMS HGAP scope item for produce."
+        },
+        {
+            "id": "HGAP.GQ.9.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Chemical Controls",
+            "title": "Water used with agricultural and treatment chemicals is safe and compliant",
+            "description": "Water used with agricultural chemicals, including water treatment agricultural chemicals, is controlled so it does not contaminate product or fields and is used according to label directions and applicable regulation.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the SOP for mixing or applying agricultural chemicals with water, including the approved water source and label checks."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Provide one recent record showing the water source, product used, and label/usage check for a chemical application or treatment event."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 74",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.4"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 75",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.5"
+                }
+            ],
+            "ams_ids": [
+                "G-11.4",
+                "G-11.5"
+            ],
+            "ams_mapping_note": "Bundles contamination control for water used with agricultural chemicals (G-11.4) and label/regulatory compliance for water treatment agricultural chemicals (G-11.5)."
+        },
+        {
+            "id": "HGAP.GQ.9.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Chemical Controls",
+            "title": "Agricultural chemical disposal prevents contamination",
+            "description": "Unused agricultural chemicals, rinsate, and chemical waste are disposed of so they do not contaminate produce, soil, water, packaging, or food-contact areas.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the chemical disposal procedure or disposal vendor instructions used by the operation."
+                },
+                {
+                    "kind": "log_record",
+                    "guidance": "Provide one recent disposal record, container-rinse record, or reviewer note explaining how disposal is handled when no disposal event occurred in the audit period."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 76",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.6"
+                }
+            ],
+            "ams_ids": [
+                "G-11.6"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.9.4",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Chemical Controls",
+            "title": "Food-contact cleaning agents and compressed air are controlled",
+            "description": "Cleaning agents used on food-contact surfaces are appropriate for that use, and compressed air or other gases contacting produce or food-contact surfaces are maintained so they do not become a contamination source.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the approved cleaning-agent list or specification showing suitability for food-contact surfaces."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the maintenance or filter-change record for compressed air or gas systems that contact produce or food-contact surfaces, if used."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 78",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.7"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 79",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-11.8"
+                }
+            ],
+            "ams_ids": [
+                "G-11.7",
+                "G-11.8"
+            ],
+            "ams_mapping_note": "Bundles food-contact cleaning-agent suitability (G-11.7) and compressed-air/gas contamination control (G-11.8)."
+        },
+        {
+            "id": "HGAP.GQ.10.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Transportation - Outbound",
+            "title": "Outbound shipment manifest with lot codes",
+            "description": "Each outbound shipment is documented with a manifest including lot codes, quantities, ship date, carrier, and consignee, supporting one-step-forward traceability.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Outbound shipment log: ship date, lot codes, quantities, carrier, consignee."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload sample bill of lading or shipping manifest."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 31",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-6.1"
+                }
+            ],
+            "ams_ids": [
+                "G-6.1"
+            ],
+            "ams_mapping_note": "AMS does not have a separate outbound-shipment control; outbound lot codes inherit from G-6.1 traceability program. SmartFarm-added for audit-readiness usability."
+        },
+        {
+            "id": "HGAP.GQ.10.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Transportation - Carrier Inspection",
+            "title": "Outbound carrier pre-load inspection",
+            "description": "Carriers loading finished product are inspected for cleanliness, odor, prior load compatibility, and temperature pre-cool when required; results are recorded.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "log_record",
+                    "guidance": "Carrier pre-load inspection log: date, carrier id, prior load, condition, temperature, signer."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Optional photo of trailer interior immediately before loading."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "n/a",
+                    "label": "No direct USDA AMS HGAP base control. SmartFarm-added control; see ams_mapping_note."
+                }
+            ],
+            "ams_ids": [],
+            "ams_mapping_note": "No AMS HGAP base control. SmartFarm-added; transportation outbound is more thoroughly addressed in the optional Warehouse Addendum (out of v1 scope)."
+        },
+        {
+            "id": "HGAP.GQ.11.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Waste Management",
+            "title": "Waste management plan prevents produce contamination",
+            "description": "The operation implements a waste management plan and keeps trash handled and located so it does not contact produce or create a contamination risk in growing, harvest, packing, or storage areas.",
+            "evidence_required": true,
+            "expert_review_required": false,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the waste management plan or SOP."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo of trash handling/storage setup showing produce is protected from waste contact."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 81",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-12.1"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 82",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-12.2"
+                }
+            ],
+            "ams_ids": [
+                "G-12.1",
+                "G-12.2"
+            ],
+            "ams_mapping_note": "Bundles the waste management plan requirement (G-12.1) with the no-trash-contact-with-produce requirement (G-12.2)."
+        },
+        {
+            "id": "HGAP.GQ.12.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Defense",
+            "title": "Unauthorized access risks to growing and packing areas are assessed",
+            "description": "The operation assesses the potential for unauthorized access to growing or packing areas and evaluates the food-safety impact of those access risks.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the unauthorized-access or perimeter risk assessment covering growing and packing areas."
+                },
+                {
+                    "kind": "photo",
+                    "guidance": "Photo or site map showing the main access points and control measures used at the operation."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 84",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-13.1"
+                }
+            ],
+            "ams_ids": [
+                "G-13.1"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.12.2",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Defense",
+            "title": "Emergency response plan covers food-safety incidents and security events",
+            "description": "The operation maintains an emergency response plan describing how it responds to food-safety emergencies and security-related events that could affect product safety.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the emergency response plan with contacts, escalation steps, and product-protection actions."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 85",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-13.2"
+                }
+            ],
+            "ams_ids": [
+                "G-13.2"
+            ]
+        },
+        {
+            "id": "HGAP.GQ.12.3",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Defense",
+            "title": "Food defense risks are assessed and mitigated",
+            "description": "Initially and at least annually, the operation evaluates security-related food defense risks and keeps a written food defense plan describing the mitigation steps for the identified risks.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the annual food defense risk assessment."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the written food defense plan showing mitigation actions for the risks identified."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 86",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-13.2.a"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 87",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-13.2.b"
+                }
+            ],
+            "ams_ids": [
+                "G-13.2.a",
+                "G-13.2.b"
+            ],
+            "ams_mapping_note": "Bundles the annual food defense risk assessment (G-13.2.a) with the written mitigation plan requirement (G-13.2.b)."
+        },
+        {
+            "id": "HGAP.GQ.13.1",
+            "scheme": "USDA_HGAP",
+            "version": "3.1",
+            "section": "General Questions",
+            "subsection": "Food Fraud",
+            "title": "Food fraud risks are assessed and mitigated",
+            "description": "Initially and at least annually, the operation evaluates food fraud risks and maintains a written food fraud plan describing mitigation measures for the vulnerabilities identified.",
+            "evidence_required": true,
+            "expert_review_required": true,
+            "evidence_spec": [
+                {
+                    "kind": "document",
+                    "guidance": "Upload the annual food fraud vulnerability assessment."
+                },
+                {
+                    "kind": "document",
+                    "guidance": "Upload the written food fraud mitigation plan."
+                }
+            ],
+            "references": [
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 89",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-14.1.a"
+                },
+                {
+                    "locator": "Checklist-General Questions (xl/worksheets/sheet5.xml) row 90",
+                    "label": "USDA AMS Harmonized GAP Combined Checklist v6.2, G-14.1.b"
+                }
+            ],
+            "ams_ids": [
+                "G-14.1.a",
+                "G-14.1.b"
+            ],
+            "ams_mapping_note": "Bundles the annual food fraud risk assessment (G-14.1.a) with the written mitigation plan requirement (G-14.1.b)."
+        }
+    ],
+    "checklist_version": "6.2",
+    "source_documents": [
+        {
+            "url": "https://www.ams.usda.gov/sites/default/files/media/Harmonized_GAP_Standard_Version_3.1.pdf",
+            "label": "USDA AMS Harmonized GAP Standard v3.1 (PDF)"
+        },
+        {
+            "url": "https://www.ams.usda.gov/sites/default/files/media/HarmonizedGAPCombinedChecklist6.2.xlsx",
+            "label": "USDA AMS Harmonized GAP Combined Checklist v6.2 (XLSX)"
+        },
+        {
+            "url": "https://www.ams.usda.gov/sites/default/files/media/HarmonizedGAPCombinedChecklist6.2.pdf",
+            "label": "USDA AMS Harmonized GAP Combined Checklist v6.2 (PDF)"
+        }
+    ],
+    "ams_crosswalk_note": "Each control carries an ams_ids[] array citing the verbatim USDA AMS control identifier(s) from the Combined Checklist v6.2. references[].locator uses the canonical XLSX worksheet+row form (e.g. \"Checklist-General Questions, sheet5.xml row 6\"). Ruleset revision 1.2.0 completes the approved Phase 4.2 Field Operations expansion and now maps the full AMS base General Questions + Field Operations checklist. Some SmartFarm controls intentionally bundle multiple AMS controls (see ams_mapping_note) or are SmartFarm-added with no direct AMS analogue (ams_ids = []). Optional addenda and future SmartFarm-only control disposition work remain explicitly out of scope for this base file."
+}

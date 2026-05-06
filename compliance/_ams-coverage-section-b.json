@@ -1,0 +1,1403 @@
+{
+  "Checklist-General Questions": [
+    {
+      "row": 6,
+      "ams_id": "G-1.1",
+      "text": "A food safety policy shall be in place.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.4"
+      ]
+    },
+    {
+      "row": 7,
+      "ams_id": "G-1.1.a",
+      "text": "The food safety policy shall include measurable objectives for meeting the safety needs of products.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.4"
+      ]
+    },
+    {
+      "row": 8,
+      "ams_id": "G-1.2",
+      "text": "Management has designated individual(s) on-site and remote, including a list of alternatives authorized to act in absence of designated individuals, with roles, responsibilities, and resources for food safety functions.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.2"
+      ]
+    },
+    {
+      "row": 9,
+      "ams_id": "G-1.2.a",
+      "text": "The food safety plan outlines an organizational structure for at least those staff whose activities affect food safety.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.5"
+      ]
+    },
+    {
+      "row": 10,
+      "ams_id": "G-1.3",
+      "text": "There is a corrective action policy for food safety violations resulting from employees and workers.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.6"
+      ]
+    },
+    {
+      "row": 12,
+      "ams_id": "G-2.1",
+      "text": "There shall be a written Food Safety Plan. The plan shall cover the Operation.  The Operation and products covered shall be defined.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.1",
+        "HGAP.GQ.6.1"
+      ]
+    },
+    {
+      "row": 13,
+      "ams_id": "G-2.2",
+      "text": "The food safety plan shall be reviewed at least annually and when changes that affect the operation occur.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.3",
+        "HGAP.GQ.6.2"
+      ]
+    },
+    {
+      "row": 14,
+      "ams_id": "G-2.3",
+      "text": "Operation has an approved supplier program for all incoming materials, including packaging, soil amendments, and alternative growing media, soil-less media, and substrates.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.7"
+      ]
+    },
+    {
+      "row": 15,
+      "ams_id": "G-2.4",
+      "text": "Operation has an approved services program for all services which may impact the safety of the product.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.8"
+      ]
+    },
+    {
+      "row": 16,
+      "ams_id": "G-2.4.a",
+      "text": "Approved supplier program contains written procedures for the evaluation, approval, and continued monitoring of suppliers and service providers.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.8"
+      ]
+    },
+    {
+      "row": 18,
+      "ams_id": "G-3.1",
+      "text": "Documentation shall be kept that demonstrates the food safety plan is being followed.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.7.1"
+      ]
+    },
+    {
+      "row": 19,
+      "ams_id": "G-3.2",
+      "text": "Documentation shall be readily available for inspection.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.7.1"
+      ]
+    },
+    {
+      "row": 20,
+      "ams_id": "G-3.3",
+      "text": "Documentation shall be retained for a minimum period of two years, or as required by prevailing regulation.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.7.1"
+      ]
+    },
+    {
+      "row": 21,
+      "ams_id": "G-3.3.a",
+      "text": "Food safety plan documentation and records shall be securely stored and effectively controlled.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.7.2"
+      ]
+    },
+    {
+      "row": 23,
+      "ams_id": "G-4.1",
+      "text": "All employees and workers shall receive food safety training, appropriate to their job responsibilities.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.2.1"
+      ]
+    },
+    {
+      "row": 24,
+      "ams_id": "G-4.2",
+      "text": "Employees and workers with supervisory food safety responsibilities shall receive training sufficient to their responsibilities.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.2.2"
+      ]
+    },
+    {
+      "row": 25,
+      "ams_id": "G-4.3",
+      "text": "Contracted workers are held to the relevant food safety standards as they would be as employees or workers.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.2.5"
+      ]
+    },
+    {
+      "row": 27,
+      "ams_id": "G-5.1",
+      "text": "Where laboratory analysis is required in the food safety plan, testing shall be performed by a GLP laboratory or laboratory participating in a proficiency testing program using scientifically valid methods.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.9"
+      ]
+    },
+    {
+      "row": 28,
+      "ams_id": "G-5.2",
+      "text": "Where microbiological analysis is required in the food safety plan, samples shall be collected in accordance with an established sampling procedure and prevailing regulations and records kept.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.9"
+      ]
+    },
+    {
+      "row": 29,
+      "ams_id": "G-5.3",
+      "text": "All microbiological testing as directed by the food safety plan shall include procedures and actions to be taken based on the results.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.9"
+      ]
+    },
+    {
+      "row": 31,
+      "ams_id": "G-6.1",
+      "text": "A documented traceability program shall be established.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.7.1",
+        "HGAP.GQ.4.1",
+        "HGAP.GQ.10.1"
+      ]
+    },
+    {
+      "row": 32,
+      "ams_id": "G-6.1.a",
+      "text": "Packaging must include product identification.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.4.3"
+      ]
+    },
+    {
+      "row": 33,
+      "ams_id": "G-6.1.b",
+      "text": "If product is intended for export, product meets labeling regulations of the country(ies) the product is being exported to.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.4.3"
+      ]
+    },
+    {
+      "row": 34,
+      "ams_id": "G-6.1.c",
+      "text": "If a post-harvest\noperation supplies product to a farm stand or Community Supported Agriculture (CSA), records tracing the product from the\npost-harvest operation to the farm stand or CSA are required.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.4.4"
+      ]
+    },
+    {
+      "row": 35,
+      "ams_id": "G-6.2",
+      "text": "A trace back and trace forward exercise shall be performed at least annually.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.4.5"
+      ]
+    },
+    {
+      "row": 37,
+      "ams_id": "G-7.1",
+      "text": "A documented recall program, including written procedures, shall be established.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.5.1"
+      ]
+    },
+    {
+      "row": 38,
+      "ams_id": "G-7.2",
+      "text": "The recall program shall have a designated recall team.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.5.1"
+      ]
+    },
+    {
+      "row": 39,
+      "ams_id": "G-7.3",
+      "text": "A mock recall exercise shall be performed at least annually at the operation being audited.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.4.2"
+      ]
+    },
+    {
+      "row": 41,
+      "ams_id": "G-8.1",
+      "text": "The operation shall have documented corrective action procedures.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.5.2"
+      ]
+    },
+    {
+      "row": 42,
+      "ams_id": "G-8.1.a",
+      "text": "Corrective action procedures shall include a procedure to evaluate complaints.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.5.2"
+      ]
+    },
+    {
+      "row": 43,
+      "ams_id": "G-8.1.b",
+      "text": "Food safety incidents are recorded and assessed to determine severity and risk, and are addressed according to a documented food safety incident management procedure.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.5.2"
+      ]
+    },
+    {
+      "row": 44,
+      "ams_id": "G-8.2",
+      "text": "Non-conforming product on hold for food safety is clearly identified and segregated from other products and packaging materials.",
+      "doc_required": "WP\nR",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.5.3"
+      ]
+    },
+    {
+      "row": 46,
+      "ams_id": "G-9.1",
+      "text": "The Operation shall have documented self-audit procedures.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.1.3"
+      ]
+    },
+    {
+      "row": 48,
+      "ams_id": "G-10.1",
+      "text": "Operation shall have a policy for toilet, handwashing, hygiene, and health.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.1",
+        "HGAP.GQ.3.2"
+      ]
+    },
+    {
+      "row": 49,
+      "ams_id": "G-10.2",
+      "text": "Employees, workers, and visitors shall be made aware of and follow all personal hygiene practices as designated by the operation.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.2.3"
+      ]
+    },
+    {
+      "row": 50,
+      "ams_id": "G-10.3",
+      "text": "Toilet facilities and restrooms shall be designed, constructed, and located in a manner that minimizes the potential risk for product contamination and are directly accessible for servicing.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.2"
+      ]
+    },
+    {
+      "row": 51,
+      "ams_id": "G-10.4",
+      "text": "Toilet facilities shall be of adequate number, easily accessible to employees, workers, and visitors and in compliance with applicable regulations.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.8.1",
+        "HGAP.GQ.3.2"
+      ]
+    },
+    {
+      "row": 52,
+      "ams_id": "G-10.5",
+      "text": "The practice of disposing of used toilet tissue on the floor, in trash receptacles, or in boxes is prohibited except in situations where waste systems are not capable of handling toilet paper.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.2"
+      ]
+    },
+    {
+      "row": 53,
+      "ams_id": "G-10.6",
+      "text": "Toilet and wash stations shall be maintained in a clean and sanitary condition.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.1",
+        "HGAP.FO.8.1",
+        "HGAP.GQ.3.2"
+      ]
+    },
+    {
+      "row": 54,
+      "ams_id": "G-10.7",
+      "text": "A response plan is in place for spills or leaks of field sanitation units.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.8.2"
+      ]
+    },
+    {
+      "row": 55,
+      "ams_id": "G-10.8",
+      "text": "Employees and workers shall wash their hands at any time when their hands may be a source of contamination.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.1"
+      ]
+    },
+    {
+      "row": 56,
+      "ams_id": "G-10.9",
+      "text": "Signage requiring handwashing is posted.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.2"
+      ]
+    },
+    {
+      "row": 57,
+      "ams_id": "G-10.10",
+      "text": "Clothing, including footwear, shall be effectively maintained, laundered, and worn so as to protect product from risk of contamination.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.4"
+      ]
+    },
+    {
+      "row": 58,
+      "ams_id": "G-10.11",
+      "text": "If gloves are used, the operation shall have a glove use policy.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.4"
+      ]
+    },
+    {
+      "row": 59,
+      "ams_id": "G-10.12",
+      "text": "If protective outer garments are worn in product handling areas, they shall be handled in a manner to protect against contamination.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.4"
+      ]
+    },
+    {
+      "row": 60,
+      "ams_id": "G-10.13",
+      "text": "The wearing of jewelry, body piercings and other loose objects shall be in compliance to company policy and applicable regulation.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.4"
+      ]
+    },
+    {
+      "row": 61,
+      "ams_id": "G-10.14",
+      "text": "The use of hair coverings shall be in compliance to company policy and applicable regulation.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.4"
+      ]
+    },
+    {
+      "row": 62,
+      "ams_id": "G-10.15",
+      "text": "Employee’s and worker’s personal belongings shall be stored in designated areas.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.5"
+      ]
+    },
+    {
+      "row": 63,
+      "ams_id": "G-10.16",
+      "text": "Smoking, chewing, eating, drinking (other than water), chewing gum, spitting, urinating, defecating, and using tobacco, shall be prohibited except in clearly designated areas.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.1"
+      ]
+    },
+    {
+      "row": 64,
+      "ams_id": "G-10.17",
+      "text": "Operation shall have a policy that break areas are located so as not to be a source of product contamination.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.5"
+      ]
+    },
+    {
+      "row": 65,
+      "ams_id": "G-10.18",
+      "text": "Drinking water shall be available to all field employees and workers.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.5"
+      ]
+    },
+    {
+      "row": 66,
+      "ams_id": "G-10.19",
+      "text": "Workers and visitors who show signs of illness shall be excluded from direct contact with produce or food-contact surfaces and from entering produce handling areas.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.1"
+      ]
+    },
+    {
+      "row": 67,
+      "ams_id": "G-10.20",
+      "text": "Employees and workers with exposed cuts, sores or lesions shall not be engaged in handling product.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.1"
+      ]
+    },
+    {
+      "row": 68,
+      "ams_id": "G-10.21",
+      "text": "Operation shall have and implement a blood and bodily fluids policy.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.1"
+      ]
+    },
+    {
+      "row": 69,
+      "ams_id": "G-10.22",
+      "text": "First aid kits shall be accessible to all employees and workers.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.3.3"
+      ]
+    },
+    {
+      "row": 71,
+      "ams_id": "G-11.1",
+      "text": "Use of pesticides and other agricultural chemicals shall comply with label directions and prevailing regulation.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.4.1",
+        "HGAP.FO.4.2",
+        "HGAP.GQ.9.1"
+      ]
+    },
+    {
+      "row": 72,
+      "ams_id": "G-11.2",
+      "text": "Pre- and postharvest agricultural chemical use, shall consider the maximum residue limit (MRL) requirements in the country of origin or intended country of destination.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.9.1"
+      ]
+    },
+    {
+      "row": 73,
+      "ams_id": "G-11.3",
+      "text": "Agricultural chemicals shall be applied by trained, licensed, or certified applicators as required by prevailing regulation.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.4.1"
+      ]
+    },
+    {
+      "row": 74,
+      "ams_id": "G-11.4",
+      "text": "Water used with agricultural chemicals shall not be a potential source of product or field contamination.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.9.2"
+      ]
+    },
+    {
+      "row": 75,
+      "ams_id": "G-11.5",
+      "text": "Use of water treatment agricultural chemicals shall comply with label directions and prevailing regulation.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.9.2"
+      ]
+    },
+    {
+      "row": 76,
+      "ams_id": "G-11.6",
+      "text": "Agricultural chemical disposal shall not be a source of product or field contamination.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.9.3"
+      ]
+    },
+    {
+      "row": 77,
+      "ams_id": "G-11.6.a",
+      "text": "Agricultural chemicals approved for use on the crops being grown are stored separately from agricultural chemicals used for other purposes.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.4.3"
+      ]
+    },
+    {
+      "row": 78,
+      "ams_id": "G-11.7",
+      "text": "All cleaning agents shall be appropriate for use on food contact surfaces.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.9.4"
+      ]
+    },
+    {
+      "row": 79,
+      "ams_id": "G-11.8",
+      "text": "Compressed air or other gases that contact food or food contact surfaces must be maintained in a manner that does not serve as a potential source of product contamination.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.9.4"
+      ]
+    },
+    {
+      "row": 81,
+      "ams_id": "G-12.1",
+      "text": "Operation has implemented a waste management plan.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.11.1"
+      ]
+    },
+    {
+      "row": 82,
+      "ams_id": "G-12.2",
+      "text": "Trash shall not come in contact with produce.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.11.1"
+      ]
+    },
+    {
+      "row": 84,
+      "ams_id": "G-13.1",
+      "text": "Operation shall assess the potential for unauthorized access to growing and/or packing areas and its impact on food safety.",
+      "doc_required": "A",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.12.1"
+      ]
+    },
+    {
+      "row": 85,
+      "ams_id": "G-13.2",
+      "text": "Operation shall develop an emergency response plan.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.12.2"
+      ]
+    },
+    {
+      "row": 86,
+      "ams_id": "G-13.2.a",
+      "text": "Initially and at least annually thereafter, the operation shall evaluate and document the risks associated with security (food defense), including unintentional security risks.",
+      "doc_required": "A",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.12.3"
+      ]
+    },
+    {
+      "row": 87,
+      "ams_id": "G-13.2.b",
+      "text": "There shall be a written food defense plan to mitigate risks identified in the food defense risk assessment.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.12.3"
+      ]
+    },
+    {
+      "row": 89,
+      "ams_id": "G-14.1.a",
+      "text": "The operation shall initially and at least annually thereafter, evaluate and document the risks associated with food fraud.",
+      "doc_required": "A",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.13.1"
+      ]
+    },
+    {
+      "row": 90,
+      "ams_id": "G-14.1.b",
+      "text": "There shall be a written food fraud plan to mitigate risks identified in the food fraud risk assessment.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.GQ.13.1"
+      ]
+    }
+  ],
+  "Checklist-Field Ops": [
+    {
+      "row": 6,
+      "ams_id": "F-1.1",
+      "text": "The food safety plan shall, initially and at least annually thereafter, evaluate and document the risks associated with land use history and adjacent land use including equipment and structures.",
+      "doc_required": "A",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.1.1",
+        "HGAP.FO.1.2"
+      ]
+    },
+    {
+      "row": 7,
+      "ams_id": "F-1.1.a",
+      "text": "Operation has performed and documented a risk assessment of each production area prior to the harvest of that location. The risk assessment must include potential cross contamination between production sites.",
+      "doc_required": "A",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.1.1"
+      ]
+    },
+    {
+      "row": 8,
+      "ams_id": "F-1.1.b",
+      "text": "Operation has identified control measures for all significant hazards identified during risk assessment.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.1.1"
+      ]
+    },
+    {
+      "row": 9,
+      "ams_id": "F-1.2",
+      "text": "For indoor growing and field storage buildings, building shall be constructed and maintained in a manner that prevents contamination of produce.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.1.3"
+      ]
+    },
+    {
+      "row": 10,
+      "ams_id": "F-1.3",
+      "text": "Sewage or septic systems are maintained so as not to be a source of contamination.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.1.4"
+      ]
+    },
+    {
+      "row": 12,
+      "ams_id": "F-2.1",
+      "text": "A water system description shall be available for review.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.1"
+      ]
+    },
+    {
+      "row": 13,
+      "ams_id": "F-2.2",
+      "text": "The water source shall be in compliance with prevailing regulations.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.1"
+      ]
+    },
+    {
+      "row": 14,
+      "ams_id": "F-2.3",
+      "text": "Water systems shall not be cross-connected with human or animal waste systems.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.1"
+      ]
+    },
+    {
+      "row": 16,
+      "ams_id": "F-3.1",
+      "text": "An initial risk assessment shall be performed and documented that takes into consideration the historical testing results of the water source, the characteristics of the crop, the stage of the crop, and the method of application.",
+      "doc_required": "A",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.2"
+      ]
+    },
+    {
+      "row": 18,
+      "ams_id": "F-4.1",
+      "text": "There shall be a water management plan to mitigate risks associated with the water system on an ongoing basis.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.3"
+      ]
+    },
+    {
+      "row": 19,
+      "ams_id": "F-4.2",
+      "text": "Water testing shall be part of the water management plan, as directed by the water risk assessment and current industry standards or prevailing regulations for the commodities being grown.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.2"
+      ]
+    },
+    {
+      "row": 20,
+      "ams_id": "F-4.3",
+      "text": "The testing program shall be implemented consistent with the water management plan.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.2"
+      ]
+    },
+    {
+      "row": 21,
+      "ams_id": "F-4.4",
+      "text": "If water is treated to meet microbiological criteria, the treatment is approved and effective for its intended use, and is appropriately monitored.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.5"
+      ]
+    },
+    {
+      "row": 22,
+      "ams_id": "F-4.5",
+      "text": "If microbial die-off is used to achieve the operation’s microbial criteria, operation has documentation supporting its use.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.6"
+      ]
+    },
+    {
+      "row": 23,
+      "ams_id": "F-4.6",
+      "text": "If operation uses an alternative approach to regulatory microbiological testing compared to current industry standards or regulations, operation has scientific data or information to support the alternative as providing the same level of public health protection.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.4"
+      ]
+    },
+    {
+      "row": 25,
+      "ams_id": "F-5.1",
+      "text": "The operation has a written risk assessment on animal activity in and around the production area.",
+      "doc_required": "A",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.5.1"
+      ]
+    },
+    {
+      "row": 26,
+      "ams_id": "F-5.2",
+      "text": "The operation routinely monitors for animal activity in and around the growing area during the growing season.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.5.1"
+      ]
+    },
+    {
+      "row": 27,
+      "ams_id": "F-5.3",
+      "text": "Based on the risk assessment, there shall be measures to prevent or minimize the potential for contamination from animals, including domesticated animals used in farming operations.",
+      "doc_required": "WP,R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.5.2"
+      ]
+    },
+    {
+      "row": 29,
+      "ams_id": "F-6.1",
+      "text": "The food safety plan shall address risk, preparation, use, and storage of animal-based soil amendments or biosolids.",
+      "doc_required": "A,\nR",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.3.1"
+      ]
+    },
+    {
+      "row": 30,
+      "ams_id": "F-6.2",
+      "text": "If a soil amendment containing raw or incompletely treated manure is used, it shall be used in a manner so as not to serve as a source of contamination of produce as required by current industry standard or prevailing regulation.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.3.2"
+      ]
+    },
+    {
+      "row": 31,
+      "ams_id": "F-6.3",
+      "text": "If an alternative growing media, soil-less media, or substrate not of animal-origin is used (e.g., perlite, peat, coconut fiber, rock wool, clay pebbles), it is appropriate for its intended use and stored and handled in a manner to minimize the risk of contamination.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.3.3"
+      ]
+    },
+    {
+      "row": 33,
+      "ams_id": "F-7.1",
+      "text": "Equipment, vehicles, tools utensils and other items or materials used in farming operations that may contact produce are identified.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.2"
+      ]
+    },
+    {
+      "row": 34,
+      "ams_id": "F-7.2",
+      "text": "Equipment, vehicles, tools and utensils used in farming operations which come into contact with product are in good repair, fit for purpose, and are not a source of contamination of produce.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.2"
+      ]
+    },
+    {
+      "row": 35,
+      "ams_id": "F-7.2.a",
+      "text": "All equipment and instruments which have an effect on food safety shall be identified, adequately maintained and calibrated at a frequency sufficient to assure continuous accuracy.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.4.4"
+      ]
+    },
+    {
+      "row": 36,
+      "ams_id": "F-7.2.b",
+      "text": "Calibration of equipment is traceable to a recognized standard.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.4.4"
+      ]
+    },
+    {
+      "row": 37,
+      "ams_id": "F-7.2.c",
+      "text": "The cleaning and sanitation program shall include measures for monitoring to verify effectiveness.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.8"
+      ]
+    },
+    {
+      "row": 38,
+      "ams_id": "F-7.3",
+      "text": "Vehicles, equipment, tools and utensils shall be controlled so as not to be a source of chemical hazards.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.9"
+      ]
+    },
+    {
+      "row": 39,
+      "ams_id": "F-7.4",
+      "text": "Vehicles, equipment, tools and utensils shall be controlled so as not to be a source of physical hazards.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.3"
+      ]
+    },
+    {
+      "row": 40,
+      "ams_id": "F-7.5",
+      "text": "Cleaning and sanitizing procedures do not pose a risk of product contamination.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.9"
+      ]
+    },
+    {
+      "row": 41,
+      "ams_id": "F-7.6",
+      "text": "Water tanks are cleaned at a sufficient frequency so as not to be a source of contamination.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.10"
+      ]
+    },
+    {
+      "row": 44,
+      "ams_id": "F-8.1",
+      "text": "A preharvest risk assessment shall be performed.",
+      "doc_required": "A",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.5.1"
+      ]
+    },
+    {
+      "row": 46,
+      "ams_id": "F-9.1",
+      "text": "Operation has procedures for water used in contact with product or food contact surfaces.",
+      "doc_required": "WP,R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.4"
+      ]
+    },
+    {
+      "row": 47,
+      "ams_id": "F-9.2",
+      "text": "Water use SOPs address the microbial quality of water or ice that directly contacts the harvested crop or is used on food-contact surfaces.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.4"
+      ]
+    },
+    {
+      "row": 48,
+      "ams_id": "F-9.3",
+      "text": "If an antimicrobial process or chemical treatment is used for harvest or post-harvest water, it shall be used in accordance with manufacturer instructions and the operation’s written SOP.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.4"
+      ]
+    },
+    {
+      "row": 49,
+      "ams_id": "F-9.4",
+      "text": "If water contacting product or food contact surfaces is re-used, it shall be treated using a registered or approved antimicrobial process or chemical treatment.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.11"
+      ]
+    },
+    {
+      "row": 50,
+      "ams_id": "F-9.5",
+      "text": "Water use SOPs address condition and maintenance of water-delivery system.",
+      "doc_required": "R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.2.3"
+      ]
+    },
+    {
+      "row": 51,
+      "ams_id": "F-9.6",
+      "text": "If applicable to the specific commodity, water use SOPs address control of wash water temperature.",
+      "doc_required": "R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.12"
+      ]
+    },
+    {
+      "row": 53,
+      "ams_id": "F-10.1",
+      "text": "Operation has written policy regarding storage of harvesting containers.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.13"
+      ]
+    },
+    {
+      "row": 54,
+      "ams_id": "F-10.2",
+      "text": "Operation has written policy regarding inspection of food contact containers prior to use.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.13"
+      ]
+    },
+    {
+      "row": 55,
+      "ams_id": "F-10.3",
+      "text": "Operation has written policy regarding acceptable harvesting containers.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.13"
+      ]
+    },
+    {
+      "row": 56,
+      "ams_id": "F-10.4",
+      "text": "Operation has written policy prohibiting use of harvest containers for non-harvest purposes.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.13"
+      ]
+    },
+    {
+      "row": 58,
+      "ams_id": "F-11.1",
+      "text": "Operation shall have a written policy that visibly contaminated, damaged or decayed produce is not harvested, or is culled.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.6"
+      ]
+    },
+    {
+      "row": 59,
+      "ams_id": "F-11.2",
+      "text": "Product that contacts the ground shall not be harvested unless the product normally grows in contact with the ground.",
+      "doc_required": "WP",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.7"
+      ]
+    },
+    {
+      "row": 60,
+      "ams_id": "F-11.3",
+      "text": "Harvest procedures shall include measures to inspect for and remove physical hazards.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.3"
+      ]
+    },
+    {
+      "row": 61,
+      "ams_id": "F-11.4",
+      "text": "Cloths, towels, or other cleaning materials that pose a risk of cross-contamination shall not be used to wipe produce, unless risk mitigation procedures are in place.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.14"
+      ]
+    },
+    {
+      "row": 62,
+      "ams_id": "F-11.5",
+      "text": "Packaging materials shall be appropriate for their intended use.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.5"
+      ]
+    },
+    {
+      "row": 63,
+      "ams_id": "F-11.6",
+      "text": "Packaging shall be stored in a manner that minimizes contamination.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.5"
+      ]
+    },
+    {
+      "row": 64,
+      "ams_id": "F-11.7",
+      "text": "Operation has written policy regarding whether packaging materials are permitted in direct contact with the soil.",
+      "doc_required": "WP",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.5"
+      ]
+    },
+    {
+      "row": 65,
+      "ams_id": "F-11.8.a",
+      "text": "The operation has implemented a product release procedure.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.7.1"
+      ]
+    },
+    {
+      "row": 67,
+      "ams_id": "F-12.1",
+      "text": "Harvested produce is handled in a manner such that it is not likely to become contaminated.",
+      "doc_required": "",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.10.1"
+      ]
+    },
+    {
+      "row": 68,
+      "ams_id": "F-12.1.a",
+      "text": "When product is field packed, collection, storage, and distribution points are maintained in a clean and hygienic condition.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.10.1"
+      ]
+    },
+    {
+      "row": 69,
+      "ams_id": "F-12.2",
+      "text": "Materials that come in contact with the produce shall be clean and in good repair.",
+      "doc_required": "WP, R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.6.14"
+      ]
+    },
+    {
+      "row": 71,
+      "ams_id": "F-13.1",
+      "text": "The operation shall have a policy, written procedures, and a checklist to verify cleanliness and functionality of shipping units (e.g., trailer).",
+      "doc_required": "WP, R",
+      "mandatory_marker": "●",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.9.1"
+      ]
+    },
+    {
+      "row": 72,
+      "ams_id": "F-13.2",
+      "text": "Loading/unloading procedures and equipment shall minimize damage to and prevent contamination of produce.",
+      "doc_required": "",
+      "mandatory_marker": "",
+      "disposition": "mapped",
+      "mapped_to": [
+        "HGAP.FO.9.1"
+      ]
+    }
+  ]
+}
