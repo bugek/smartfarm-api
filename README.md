@@ -51,3 +51,35 @@ pnpm build
 - This repo is intentionally standalone, not a monorepo.
 - The first execution target for Paperclip is OME-10: tenancy and role model.
 
+## Auth session contract
+
+`OME-101` adds the SmartFarm web auth/session contract:
+
+- `POST /api/v1/auth/login` with `{ email, password }`
+- `POST /api/v1/auth/refresh` with `{ refreshToken }`
+- `GET /api/v1/auth/session` with `Authorization: Bearer <accessToken>`
+- `POST /api/v1/auth/logout` with `{ refreshToken }`
+
+Token responses include:
+
+- `accessToken`
+- `refreshToken`
+- `accessTokenExpiresAt`
+- `refreshTokenExpiresAt`
+- `session`
+
+The `session` payload includes:
+
+- `user`
+- `activeOrganizationId`
+- `memberships[]` with `id`, `organizationId`, `organizationName`, and `role`
+
+Tenant-scoped API routes now accept either:
+
+- `Authorization: Bearer <accessToken>` plus `x-organization-id`
+- legacy dev headers: `x-user-id`, `x-organization-id`, and optional `x-membership-role`
+
+For local validation, `.env.example` includes a dev bootstrap user:
+
+- email: `demo@smartfarm.local`
+- password: `smartfarm-demo`

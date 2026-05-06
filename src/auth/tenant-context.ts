@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { OrganizationRole } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
+import { verifyAuthToken } from "./tokens.js";
 
 const MEMBERSHIP_ROLES = new Set<string>(Object.values(OrganizationRole));
 
@@ -30,16 +31,35 @@ export async function requireTenantContext(
   next: NextFunction
 ) {
   const organizationId = req.header("x-organization-id")?.trim();
-  const userId = req.header("x-user-id")?.trim();
+  const authorization = req.header("authorization")?.trim();
+  const bearerToken = authorization?.match(/^Bearer\s+(.+)$/i)?.[1]?.trim();
+  const claims = bearerToken ? verifyAuthToken(bearerToken, "access") : null;
+  const userId = claims?.sub ?? req.header("x-user-id")?.trim();
   const requestedRole = req.header("x-membership-role")?.trim();
 
   if (!organizationId || !userId) {
     return sendAuthError(
       res,
       401,
-      "tenant_headers_required",
-      "x-organization-id and x-user-id headers are required."
+      "tenant_context_required",
+      "x-organization-id and either a bearer token or x-user-id header are required."
     );
+  }
+
+  if (claims) {
+    const authSession = await prisma.authSession.findUnique({
+      where: {
+        id: claims.sid
+      },
+      select: {
+        userId: true,
+        revokedAt: true
+      }
+    });
+
+    if (!authSession || authSession.userId !== claims.sub || authSession.revokedAt) {
+      return sendAuthError(res, 401, "invalid_access_token", "Bearer token is invalid.");
+    }
   }
 
   if (requestedRole && !MEMBERSHIP_ROLES.has(requestedRole)) {
