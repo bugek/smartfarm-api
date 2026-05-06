@@ -108,3 +108,24 @@ evidence review log:
 The thread resource is keyed by `gapRecordId`, merges manual advisory comments
 with append-only `EvidenceReview` entries, and exposes an overall thread status
 for the SmartFarm web review surface.
+
+## Audit readiness contract
+
+`OME-19` adds the pilot audit-readiness surface:
+
+- `GET /api/v1/audit-readiness/dashboard`
+- `GET /api/v1/audit-readiness/packet-export`
+- `GET /api/v1/corrective-actions`
+- `POST /api/v1/corrective-actions`
+- `PATCH /api/v1/corrective-actions/:id/assign`
+- `POST /api/v1/corrective-actions/:id/submit`
+- `POST /api/v1/corrective-actions/:id/verify`
+- `POST /api/v1/corrective-actions/:id/close`
+- `POST /api/v1/corrective-actions/:id/reopen`
+- `GET /api/v1/health/ready`
+
+The dashboard rolls up GAP records, evidence review state, open corrective
+actions, and recent audit activity by USDA H-GAP section. The packet export is
+the canonical JSON-equivalent audit packet for Phase 1 and includes the ruleset
+pin, evidence manifest, review history, open/closed corrective actions, and the
+audit log appendix.

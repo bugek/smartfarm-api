@@ -47,6 +47,14 @@ enum ReviewThreadStatus {
   rejected
 }
 
+enum CorrectiveActionStatus {
+  open_unassigned
+  assigned
+  submitted_for_review
+  verified
+  closed
+}
+
 enum DocumentKind {
   image
   video
@@ -94,6 +102,8 @@ model Organization {
   documents   Document[]
   evidences   Evidence[]
   evidenceReviews EvidenceReview[]
+  correctiveActions CorrectiveAction[]
+  correctiveActionEvidenceLinks CorrectiveActionEvidence[]
 }
 
 model User {
@@ -258,6 +268,7 @@ model GapRecord {
   checklist       GapChecklist?   @relation(fields: [checklistId], references: [id], onDelete: SetNull)
   evidences       Evidence[]
   comments        AdvisoryComment[]
+  correctiveActions CorrectiveAction[]
 
   @@index([organizationId, status])
 }
@@ -288,6 +299,7 @@ model Evidence {
   gapRecord            GapRecord            @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
   document             Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
   reviews              EvidenceReview[]
+  correctiveActionLinks CorrectiveActionEvidence[]
 
   @@index([gapRecordId, kind])
   @@index([documentId])
@@ -321,6 +333,47 @@ model AdvisoryComment {
   author      User      @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
 
   @@index([gapRecordId, createdAt])
+}
+
+model CorrectiveAction {
+  id                   String                 @id @default(cuid())
+  organizationId       String
+  gapRecordId          String
+  title                String
+  details              String
+  controlPointRef      String?
+  status               CorrectiveActionStatus @default(open_unassigned)
+  ownerUserId          String?
+  createdByUserId      String
+  dueAt                DateTime
+  assignedAt           DateTime?
+  submittedForReviewAt DateTime?
+  verifiedAt           DateTime?
+  closedAt             DateTime?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  organization         Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  gapRecord            GapRecord              @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+  evidenceLinks        CorrectiveActionEvidence[]
+
+  @@index([organizationId, status, dueAt])
+  @@index([organizationId, ownerUserId, status])
+  @@index([gapRecordId, status])
+}
+
+model CorrectiveActionEvidence {
+  id                 String           @id @default(cuid())
+  correctiveActionId String
+  evidenceId         String
+  organizationId     String
+  createdAt          DateTime         @default(now())
+  correctiveAction   CorrectiveAction @relation(fields: [correctiveActionId], references: [id], onDelete: Cascade)
+  evidence           Evidence         @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  organization       Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([correctiveActionId, evidenceId])
+  @@index([organizationId, correctiveActionId])
+  @@index([organizationId, evidenceId])
 }
 
 model AuditEvent {
