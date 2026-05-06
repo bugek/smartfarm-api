@@ -6,13 +6,24 @@ API around one scheme.
 
 ## Assumptions
 
-- SmartFarm Phase 1 continues to treat one `GapRecord` as the runtime state for
-  one farm-scoped control/checklist item.
+- SmartFarm Phase 1 keeps one stable `GapRecord` per farm-scoped
+  control/checklist item, but farmer-authored record content must become
+  append-only through a `GapRecordVersion` layer so review history stays tied
+  to the exact version that was reviewed.
 - A farm site can move to a newer ruleset version over time, but historical
   GAP records and audit exports must remain pinned to the version that was
   active when the work was performed.
 - Evidence review remains append-only and expert-facing review threads continue
   to sit on top of the evidence log rather than replacing it.
+- The shared readiness contract from OME-115 is exactly
+  `ready | partial | not_ready`. If engineering needs richer internal workflow
+  stages, keep them internal and do not expose them as the shared readiness
+  enum.
+- `unreviewed` is implicit for the current record version when it has no review
+  actions yet; it should not become a persisted readiness state.
+- Experts can append reviews and comments in Phase 1, but they do not author
+  farmer record versions. Resolution must come from farmer evidence attachment
+  or a superseding farmer-authored record version, followed by re-review.
 - USDA H-GAP is the first populated scheme, but the schema must support future
   schemes without changing the API contract shape.
 
@@ -28,6 +39,15 @@ Use two layers:
 This preserves audit reproducibility while letting future issues add new
 schemes, extraction rules, or reviewer automation without reworking the core
 evidence tables again.
+
+The main OME-115 adjustment is that schema design must separate:
+
+1. immutable ruleset/version catalog state,
+2. stable `GapRecord` identity for one control under one cycle/farm binding,
+3. append-only `GapRecordVersion` rows that represent what the farmer most
+   recently submitted,
+4. append-only review actions tied to a specific record version, and
+5. a small derived readiness surface on the current record version.
 
 ## Catalog layer
 
@@ -143,9 +163,10 @@ Rules:
 
 ### `GapRecord`
 
-Keep `GapRecord` as the runtime control-instance row instead of inventing a new
+Keep `GapRecord` as the stable control-instance row instead of inventing a new
 top-level entity. That minimizes churn because evidence, review threads, and
-audit events already key off `gapRecordId`.
+audit events already key off `gapRecordId`, while still allowing record content
+to move to append-only versions.
 
 Additive fields:
 
@@ -153,7 +174,8 @@ Additive fields:
 - `schemeVersionId`
 - `sectionVersionId`
 - `controlPointVersionId`
-- `derivedControlStatus`
+- `currentVersionId`
+- `currentReadinessStatus`
 - `dueAt` nullable
 - `startedAt` nullable
 - `evidenceSatisfiedAt` nullable
@@ -166,25 +188,62 @@ Compatibility:
   removed after all writers/readers use `controlPointVersionId`.
 - Existing `title`/`notes` can remain as farm-entered context, not catalog
   definition.
+- Current mutable `status` / `reviewThreadStatus` fields should be treated as
+  transitional operational state. The shared product-facing readiness contract
+  belongs on `currentReadinessStatus` for the current version, not on those
+  legacy enums.
 
-### `ControlReviewState`
+### `GapRecordVersion`
 
-Runtime rollup for the control-level review posture. This is separate from the
-append-only `EvidenceReview` log.
+Append-only farmer-authored snapshot for one GAP record. This is the schema
+layer that lets Phase 1 preserve reviewed history when a farmer corrects or
+resubmits a record.
 
 - `id`
 - `gapRecordId`
 - `organizationId`
-- `status` (`awaiting_review | changes_requested | approved | rejected`)
-- `lastReviewerUserId` nullable
-- `lastReviewedAt` nullable
-- `commentCount`
+- `versionNumber`
+- `isCurrent`
+- `supersededAt` nullable
+- `supersededByVersionId` nullable
+- `createdByUserId`
+- `recordedAt` nullable
+- `titleSnapshot`
+- `notesSnapshot` nullable
+- `createdAt`
 
-Implementation note:
+Rules:
 
-- Current `GapRecord.reviewThreadStatus` can serve as the initial storage home.
-- If query pressure grows, this can either stay denormalized on `GapRecord` or
-  split into a dedicated table without breaking the external contract.
+- At most one version is current for a given `gapRecordId`.
+- Superseding a farmer record creates a new version row; the previous version is
+  marked superseded but retained for history/export.
+- The latest current version controls live readiness. Superseded versions and
+  their reviews remain visible to exports and reviewers but must not control the
+  current farmer-facing readiness view.
+
+### `GapRecordVersionReview`
+
+Append-only review action tied to a specific `GapRecordVersion`. This is
+separate from evidence-level review rows because OME-115 requires record-level
+review history to survive superseding farmer submissions.
+
+- `id`
+- `gapRecordVersionId`
+- `organizationId`
+- `reviewerUserId`
+- `decision` (`approved | needs_more_evidence | blocking | comment`)
+- `comment`
+- `createdAt`
+
+Rules:
+
+- No in-place updates; corrections are new rows.
+- `unreviewed` is implicit when the current `GapRecordVersion` has no review
+  rows yet.
+- `needs_more_evidence` keeps the record readiness at `partial`.
+- `blocking` forces the record readiness to `not_ready`.
+- Experts append review actions/comments, but only farmer activity creates a new
+  `GapRecordVersion`.
 
 ### `CorrectiveAction`
 
@@ -211,43 +270,47 @@ Links:
 - Replacement evidence rows remain linked through `gapRecordId`; no separate
   corrective-action-to-evidence join is required for v1.
 
-## Derived control status
+## Derived readiness status
 
-Persist a denormalized `GapRecord.derivedControlStatus` and always compute it
-from authoritative evidence/review/runtime fields. Recommended enum:
+Persist or derive a denormalized `GapRecord.currentReadinessStatus` and always
+compute it from the current record version plus authoritative
+evidence/review/runtime fields. The shared enum is exactly:
 
-- `not_started`
-- `in_progress`
-- `evidence_captured`
-- `verified`
-- `needs_rework`
-- `overdue`
+- `ready`
+- `partial`
+- `not_ready`
 
 Status rules and precedence:
 
-1. `needs_rework`
-   Set when there is an open corrective action, the latest control review state
-   is `changes_requested`, or any required evidence item is currently in
-   `needs_rework`.
-2. `overdue`
-   Set when `dueAt < now()` and the control is not yet `verified`.
-3. `verified`
-   Set when required evidence is satisfied and either:
-   - expert review is not required for the control, or
-   - the control review state is `approved`, or
-   - every required evidence item that needs verification is `verified`.
-4. `evidence_captured`
-   Set when all required evidence requirements have at least the minimum
-   submitted evidence, but verification is still pending.
-5. `in_progress`
-   Set when the control has been started or has partial evidence, but required
-   evidence is not yet satisfied.
-6. `not_started`
-   Set when no evidence exists, no comments exist, and the control has not been
-   explicitly started.
+1. `not_ready`
+   Set when there is no usable current version for a required control, the
+   latest current-version review decision is `blocking`, or required proof for
+   the current version is missing in a way product treats as blocking.
+2. `partial`
+   Set when the current version exists but still awaits proof or review. This
+   includes the implicit unreviewed state, pending expert review, and explicit
+   `needs_more_evidence`.
+3. `ready`
+   Set when the current version has the required record-level proof and the
+   latest current-version review has no unresolved `blocking` or
+   `needs_more_evidence` outcome.
 
-This precedence keeps reviewer-driven remediation visible instead of being
-masked by a later due date check.
+Operational workflow states such as "started", "submitted", or "overdue" may
+still exist for internal queueing, but they are not substitutes for the shared
+readiness contract.
+
+## Record-level proof vs cycle-level context
+
+OME-115 makes the proof boundary explicit:
+
+- record-level evidence attached to the current GAP record/version satisfies the
+  compliance proof requirement,
+- cycle-level or farm-level evidence can add context for reviewers and audit
+  packets,
+- contextual evidence must not satisfy a
+  `ComplianceEvidenceRequirementVersion.minimumCount` on its own.
+
+This keeps readiness derivation local, explainable, and reproducible.
 
 ## Ruleset versioning and reproducible audit exports
 
@@ -289,10 +352,14 @@ This design intentionally avoids breaking the OME-18/OME-95 surfaces.
 ## API implications
 
 - `GET /api/v1/gap-records` should expose both the stable typed IDs and the
-  human-readable section/control codes.
+  human-readable section/control codes, plus the shared
+  `currentReadinessStatus`.
 - `POST /api/v1/evidence` should eventually stop accepting an arbitrary
   `controlPointRef` from the caller; it should derive the control from the
   bound `gapRecordId`.
+- Review-write APIs should target the current `gapRecordVersionId` rather than a
+  mutable record row so superseding farmer submissions reset live review
+  posture without erasing history.
 - `GET /api/v1/review-queue` should sort by section/control sequence rather than
   a string comparison on `controlPointRef`.
 - OME-20 can attach extraction suggestions and reviewer override fields to
