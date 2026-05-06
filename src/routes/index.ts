@@ -7,10 +7,12 @@ import { evidenceRouter } from "./v1/evidence.js";
 import { gapRecordsRouter } from "./v1/gap-records.js";
 import { healthRouter } from "./v1/health.js";
 import { farmSitesRouter } from "./v1/farm-sites.js";
+import { operationLogsRouter } from "./v1/operation-logs.js";
 import { organizationsRouter } from "./v1/organizations.js";
 import { plotsRouter } from "./v1/plots.js";
 import { reviewQueueRouter } from "./v1/review-queue.js";
 import { reviewsRouter } from "./v1/reviews.js";
+import { workersRouter } from "./v1/workers.js";
 
 export function registerRoutes(app: Express) {
   app.get("/", (_req: Request, res: Response) => {
@@ -26,6 +28,8 @@ export function registerRoutes(app: Express) {
   app.use("/api/v1/farm-sites", farmSitesRouter);
   app.use("/api/v1/plots", plotsRouter);
   app.use("/api/v1/crop-cycles", cropCyclesRouter);
+  app.use("/api/v1/workers", workersRouter);
+  app.use("/api/v1/operation-logs", operationLogsRouter);
   app.use("/api/v1/gap-records", gapRecordsRouter);
   app.use("/api/v1/documents", documentsRouter);
   app.use("/api/v1/evidence", evidenceRouter);

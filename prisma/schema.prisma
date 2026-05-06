@@ -87,6 +87,8 @@ model Organization {
   memberships Membership[]
   farmSites   FarmSite[]
   cropCycles  CropCycle[]
+  workers     Worker[]
+  operationLogs OperationLog[]
   gapRecords  GapRecord[]
   auditEvents AuditEvent[]
   documents   Document[]
@@ -146,6 +148,8 @@ model FarmSite {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   plots          Plot[]
   cropCycles     CropCycle[]
+  workers        Worker[]
+  operationLogs  OperationLog[]
 
   @@index([organizationId])
 }
@@ -159,6 +163,7 @@ model Plot {
   updatedAt   DateTime  @updatedAt
   farmSite    FarmSite  @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
   cropCycles  CropCycle[]
+  operationLogs OperationLog[]
 
   @@index([farmSiteId])
 }
@@ -176,9 +181,54 @@ model CropCycle {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   farmSite       FarmSite    @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
   plot           Plot?       @relation(fields: [plotId], references: [id], onDelete: SetNull)
+  operationLogs  OperationLog[]
   gapRecords     GapRecord[]
 
   @@index([organizationId, farmSiteId])
+}
+
+model Worker {
+  id             String       @id @default(cuid())
+  organizationId String
+  farmSiteId     String?
+  fullName       String
+  phone          String?
+  roleTitle      String?
+  notes          String?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite       FarmSite?    @relation(fields: [farmSiteId], references: [id], onDelete: SetNull)
+  operationLogs  OperationLog[]
+
+  @@index([organizationId, isActive, createdAt])
+  @@index([farmSiteId])
+}
+
+model OperationLog {
+  id             String       @id @default(cuid())
+  organizationId String
+  farmSiteId     String
+  plotId         String?
+  cropCycleId    String?
+  workerId       String?
+  activityType   String
+  occurredAt     DateTime
+  notes          String?
+  metadataJson   Json?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite       FarmSite     @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  plot           Plot?        @relation(fields: [plotId], references: [id], onDelete: SetNull)
+  cropCycle      CropCycle?   @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
+  worker         Worker?      @relation(fields: [workerId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, occurredAt])
+  @@index([organizationId, farmSiteId, occurredAt])
+  @@index([cropCycleId, occurredAt])
+  @@index([workerId, occurredAt])
 }
 
 model GapChecklist {
