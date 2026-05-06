@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrganizationRole {
+  admin
+  compliance_lead
+  expert
+  worker
+}
+
+enum GapRecordStatus {
+  draft
+  submitted
+  reviewed
+  needs_action
+  approved
+}
+
+enum EvidenceKind {
+  image
+  video
+  document
+}
+
+model Organization {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  memberships Membership[]
+  farmSites   FarmSite[]
+  gapRecords  GapRecord[]
+  auditEvents AuditEvent[]
+}
+
+model User {
+  id          String        @id @default(cuid())
+  email       String        @unique
+  displayName String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  memberships Membership[]
+  comments    AdvisoryComment[]
+}
+
+model Membership {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrganizationRole
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId, role])
+}
+
+model FarmSite {
+  id             String      @id @default(cuid())
+  organizationId String
+  name           String
+  code           String?
+  locationText   String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  plots          Plot[]
+  cropCycles     CropCycle[]
+
+  @@index([organizationId])
+}
+
+model Plot {
+  id          String    @id @default(cuid())
+  farmSiteId  String
+  name        String
+  areaRai     Float?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  farmSite    FarmSite  @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  cropCycles  CropCycle[]
+
+  @@index([farmSiteId])
+}
+
+model CropCycle {
+  id             String      @id @default(cuid())
+  organizationId String
+  farmSiteId     String
+  plotId         String?
+  cropName       String
+  startedAt      DateTime?
+  endedAt        DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite       FarmSite    @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  plot           Plot?       @relation(fields: [plotId], references: [id], onDelete: SetNull)
+  gapRecords     GapRecord[]
+
+  @@index([organizationId, farmSiteId])
+}
+
+model GapChecklist {
+  id          String      @id @default(cuid())
+  code        String      @unique
+  title       String
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  gapRecords  GapRecord[]
+}
+
+model GapRecord {
+  id              String          @id @default(cuid())
+  organizationId  String
+  cropCycleId     String?
+  checklistId     String?
+  title           String
+  notes           String?
+  status          GapRecordStatus @default(draft)
+  recordedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  cropCycle       CropCycle?      @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
+  checklist       GapChecklist?   @relation(fields: [checklistId], references: [id], onDelete: SetNull)
+  evidences       Evidence[]
+  comments        AdvisoryComment[]
+
+  @@index([organizationId, status])
+}
+
+model Evidence {
+  id           String      @id @default(cuid())
+  gapRecordId  String
+  kind         EvidenceKind
+  storageKey   String
+  fileName     String
+  contentType  String?
+  fileSize     Int?
+  capturedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  gapRecord    GapRecord   @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+
+  @@index([gapRecordId, kind])
+}
+
+model AdvisoryComment {
+  id          String    @id @default(cuid())
+  gapRecordId String
+  authorUserId String
+  body        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  gapRecord   GapRecord @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+  author      User      @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+
+  @@index([gapRecordId, createdAt])
+}
+
+model AuditEvent {
+  id             String       @id @default(cuid())
+  organizationId String
+  actorUserId    String?
+  entityType     String
+  entityId       String
+  action         String
+  payloadJson    Json?
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, entityType, entityId])
+}
+
