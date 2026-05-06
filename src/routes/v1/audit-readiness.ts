@@ -15,6 +15,7 @@ import {
   requireTenantContext
 } from "../../auth/tenant-context.js";
 import { prisma } from "../../lib/prisma.js";
+import { isWorkflowActiveEvidence, resolveThreadStatus } from "./review-threads.js";
 
 const RULESET_NAME = "USDA H-GAP";
 const RULESET_VERSION = "control-point-ref-v1";
@@ -90,6 +91,8 @@ const auditReadinessGapRecordSelect = {
       capturedAt: true,
       noteText: true,
       documentId: true,
+      supersededAt: true,
+      supersededByEvidenceId: true,
       submittedByUserId: true,
       submittedAt: true,
       reviewStatus: true,
@@ -352,14 +355,19 @@ function buildSummary(records: AuditReadinessGapRecord[], openCorrectiveActions:
   let totalEvidence = 0;
 
   for (const record of records) {
+    const resolvedReviewThreadStatus = getResolvedReviewThreadStatus(record);
+    const activeEvidences = getActiveWorkflowEvidence(record);
     gapRecordStatusCounts[record.status] += 1;
-    reviewThreadStatusCounts[record.reviewThreadStatus] += 1;
+    reviewThreadStatusCounts[resolvedReviewThreadStatus] += 1;
     if (record.status === GapRecordStatus.approved) {
       totalApprovedRecords += 1;
     }
 
-    for (const evidence of record.evidences) {
+    for (const evidence of activeEvidences) {
       evidenceReviewStatusCounts[evidence.reviewStatus] += 1;
+    }
+
+    for (const evidence of record.evidences) {
       totalEvidence += 1;
     }
 
@@ -412,6 +420,7 @@ function buildSectionSummaries(records: AuditReadinessGapRecord[], identities: I
   >();
 
   for (const record of records) {
+    const resolvedReviewThreadStatus = getResolvedReviewThreadStatus(record);
     const key = deriveSectionKey(record.checklist?.code);
     const entry =
       sections.get(key) ??
@@ -428,9 +437,9 @@ function buildSectionSummaries(records: AuditReadinessGapRecord[], identities: I
       };
 
     entry.gapRecordStatusCounts[record.status] += 1;
-    entry.reviewThreadStatusCounts[record.reviewThreadStatus] += 1;
+    entry.reviewThreadStatusCounts[resolvedReviewThreadStatus] += 1;
 
-    for (const evidence of record.evidences) {
+    for (const evidence of getActiveWorkflowEvidence(record)) {
       entry.evidenceReviewStatusCounts[evidence.reviewStatus] += 1;
     }
 
@@ -458,7 +467,7 @@ function buildSectionSummaries(records: AuditReadinessGapRecord[], identities: I
       id: record.id,
       title: record.title,
       status: record.status,
-      reviewThreadStatus: record.reviewThreadStatus,
+      reviewThreadStatus: resolvedReviewThreadStatus,
       farmSiteName: record.cropCycle?.farmSite.name ?? null,
       openCorrectiveActions
     });
@@ -507,7 +516,7 @@ function buildDetailedGapRecords(records: AuditReadinessGapRecord[], identities:
       title: record.title,
       notes: record.notes,
       status: record.status,
-      reviewThreadStatus: record.reviewThreadStatus,
+      reviewThreadStatus: getResolvedReviewThreadStatus(record),
       controlPointRef,
       controlPointSection: deriveSectionKey(controlPointRef),
       controlPointCatalog: record.checklist
@@ -672,6 +681,9 @@ function serializeEvidence(
     submittedByRole: submitterIdentity?.role ?? null,
     submittedAt: evidence.submittedAt,
     reviewStatus: evidence.reviewStatus,
+    supersededAt: evidence.supersededAt,
+    supersededByEvidenceId: evidence.supersededByEvidenceId,
+    isActive: evidence.supersededByEvidenceId == null,
     lastReviewedByUserId: evidence.lastReviewedByUserId,
     lastReviewedByName: reviewerIdentity?.name ?? evidence.lastReviewedByUserId ?? null,
     lastReviewedByRole: reviewerIdentity?.role ?? null,
@@ -878,6 +890,17 @@ function compareCorrectiveActions(
 
 function isJsonObject(value: Prisma.JsonValue | null): value is Prisma.JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function getActiveWorkflowEvidence(record: AuditReadinessGapRecord) {
+  return record.evidences.filter(isWorkflowActiveEvidence);
+}
+
+function getResolvedReviewThreadStatus(record: AuditReadinessGapRecord) {
+  return resolveThreadStatus(
+    record.reviewThreadStatus,
+    getActiveWorkflowEvidence(record).map((evidence) => evidence.reviewStatus)
+  );
 }
 
 function buildPacketFileName(organizationName: string, farmSiteId?: string) {

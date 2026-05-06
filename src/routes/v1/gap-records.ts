@@ -7,7 +7,7 @@ import {
   requireTenantContext
 } from "../../auth/tenant-context.js";
 import { prisma } from "../../lib/prisma.js";
-import { getReviewThread } from "./review-threads.js";
+import { getReviewThread, isWorkflowActiveEvidence, resolveThreadStatus } from "./review-threads.js";
 
 const gapRecordStatusValues = Object.values(GapRecordStatus) as [
   GapRecordStatus,
@@ -71,6 +71,12 @@ const gapRecordSelect = {
     select: {
       evidences: true,
       comments: true
+    }
+  },
+  evidences: {
+    select: {
+      reviewStatus: true,
+      supersededByEvidenceId: true
     }
   }
 } satisfies Prisma.GapRecordSelect;
@@ -260,6 +266,9 @@ gapRecordsRouter.patch(
 );
 
 function serializeGapRecord(record: GapRecordPayload) {
+  const activeEvidenceStatuses = record.evidences
+    .filter(isWorkflowActiveEvidence)
+    .map((evidence) => evidence.reviewStatus);
   const controlPointCatalog = record.checklist
     ? {
         id: record.checklist.id,
@@ -277,7 +286,7 @@ function serializeGapRecord(record: GapRecordPayload) {
     title: record.title,
     notes: record.notes,
     status: record.status,
-    reviewThreadStatus: record.reviewThreadStatus,
+    reviewThreadStatus: resolveThreadStatus(record.reviewThreadStatus, activeEvidenceStatuses),
     recordedAt: record.recordedAt,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,

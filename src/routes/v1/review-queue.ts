@@ -24,6 +24,7 @@ const queueEvidenceSelect = {
   gapRecordId: true,
   controlPointRef: true,
   reviewStatus: true,
+  supersededByEvidenceId: true,
   submittedAt: true,
   submittedByUserId: true,
   fileName: true,
@@ -60,7 +61,8 @@ reviewQueueRouter.get("/", async (req, res, next) => {
 
     const where: Prisma.EvidenceWhereInput = {
       organizationId: tenant.organizationId,
-      reviewStatus: status
+      reviewStatus: status,
+      supersededByEvidenceId: null
     };
 
     if (typeof req.query.farmSiteId === "string") {
@@ -88,15 +90,15 @@ reviewQueueRouter.get("/", async (req, res, next) => {
 
     const counts = await prisma.evidence.groupBy({
       by: ["reviewStatus"],
-      where: { organizationId: tenant.organizationId },
-      _count: { _all: true }
+      where: { organizationId: tenant.organizationId, supersededByEvidenceId: null },
+      _count: { reviewStatus: true }
     });
 
     res.json({
       organizationId: tenant.organizationId,
       filter: { status, farmSiteId: req.query.farmSiteId ?? null, controlPointRef: req.query.controlPointRef ?? null },
       counts: counts.reduce<Record<string, number>>((acc, row) => {
-        acc[row.reviewStatus] = row._count._all;
+        acc[row.reviewStatus] = row._count.reviewStatus;
         return acc;
       }, {}),
       items

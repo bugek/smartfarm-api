@@ -288,6 +288,8 @@ model Evidence {
   geoLng               Float?
   noteText             String?
   documentId           String?
+  supersededAt         DateTime?
+  supersededByEvidenceId String?
   submittedByUserId    String?
   submittedAt          DateTime?
   reviewStatus         EvidenceReviewStatus @default(pending_review)
@@ -298,11 +300,14 @@ model Evidence {
   organization         Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   gapRecord            GapRecord            @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
   document             Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  supersededByEvidence Evidence?            @relation("EvidenceSupersession", fields: [supersededByEvidenceId], references: [id], onDelete: SetNull)
+  supersedesEvidence   Evidence[]           @relation("EvidenceSupersession")
   reviews              EvidenceReview[]
   correctiveActionLinks CorrectiveActionEvidence[]
 
   @@index([gapRecordId, kind])
   @@index([documentId])
+  @@index([organizationId, supersededByEvidenceId, reviewStatus])
   @@index([organizationId, reviewStatus, createdAt])
   @@index([organizationId, controlPointRef, reviewStatus])
 }

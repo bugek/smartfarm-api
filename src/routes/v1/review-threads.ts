@@ -24,6 +24,8 @@ const gapRecordReviewThreadSelect = {
       submittedAt: true,
       createdAt: true,
       reviewStatus: true,
+      supersededAt: true,
+      supersededByEvidenceId: true,
       reviews: {
         orderBy: { createdAt: "asc" },
         select: {
@@ -129,6 +131,7 @@ async function loadAuthorIdentities(organizationId: string, userIds: string[]): 
 }
 
 function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: IdentityMap) {
+  const activeEvidences = record.evidences.filter(isWorkflowActiveEvidence);
   const comments = [
     ...record.comments.map((comment) => {
       const identity = identities.get(comment.authorUserId);
@@ -158,7 +161,9 @@ function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: 
           decision: review.decision,
           evidenceId: evidence.id,
           evidenceFileName: evidence.fileName,
-          evidenceKind: evidence.kind
+          evidenceKind: evidence.kind,
+          evidenceSupersededAt: evidence.supersededAt,
+          evidenceSupersededByEvidenceId: evidence.supersededByEvidenceId
         };
       })
     )
@@ -171,7 +176,7 @@ function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: 
     (latest, candidate) => (new Date(candidate).getTime() > new Date(latest).getTime() ? candidate : latest)
   );
 
-  const evidenceCounts = record.evidences.reduce(
+  const evidenceCounts = activeEvidences.reduce(
     (acc, evidence) => {
       acc.total += 1;
       if (evidence.reviewStatus === EvidenceReviewStatus.pending_review) acc.pendingReview += 1;
@@ -189,8 +194,12 @@ function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: 
     title: record.title,
     controlPointRef: record.checklist?.code ?? null,
     controlPointTitle: record.checklist?.title ?? null,
-    status: resolveThreadStatus(record.reviewThreadStatus, record.evidences.map((evidence) => evidence.reviewStatus)),
+    status: resolveThreadStatus(
+      record.reviewThreadStatus,
+      activeEvidences.map((evidence) => evidence.reviewStatus)
+    ),
     submittedAt:
+      activeEvidences.find((evidence) => evidence.submittedAt)?.submittedAt ??
       record.evidences.find((evidence) => evidence.submittedAt)?.submittedAt ??
       record.recordedAt ??
       record.createdAt,
@@ -209,6 +218,9 @@ function resolveThreadStatus(
   }
   if (evidenceStatuses.includes(EvidenceReviewStatus.needs_rework)) {
     return ReviewThreadStatus.changes_requested;
+  }
+  if (evidenceStatuses.includes(EvidenceReviewStatus.pending_review)) {
+    return ReviewThreadStatus.awaiting_review;
   }
   if (
     evidenceStatuses.length > 0 &&
@@ -234,3 +246,13 @@ export const evidenceReviewDecisionValues = Object.values(EvidenceReviewDecision
   EvidenceReviewDecision,
   ...EvidenceReviewDecision[]
 ];
+
+export function isWorkflowActiveEvidence<
+  TEvidence extends {
+    supersededByEvidenceId: string | null;
+  }
+>(evidence: TEvidence) {
+  return evidence.supersededByEvidenceId == null;
+}
+
+export { resolveThreadStatus };
