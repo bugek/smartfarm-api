@@ -26,4 +26,6 @@ Those live in separate repositories.
 - `OME-10`: tenancy schema and role model
 - `OME-11`: append-only audit event framework
 - `OME-15`: document storage metadata service
+- `OME-131`: traceability and retention architecture for lots, dispatches, mock
+  recall drills, and policy-driven record lifecycle
 

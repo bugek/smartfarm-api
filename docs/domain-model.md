@@ -15,6 +15,14 @@
 - `complianceEvidenceRequirementVersion`
 - `farmSchemeBinding`
 - `gapRecord`
+- `traceLot`
+- `traceLotLineage`
+- `traceDispatch`
+- `traceabilityEvent`
+- `traceabilityExercise`
+- `retentionPolicy`
+- `retentionHold`
+- `retentionExecution`
 - `controlReviewState`
 - `correctiveAction`
 - `document`
@@ -36,6 +44,8 @@
 - Users join organizations through memberships.
 - Roles are organization-scoped through memberships.
 - GAP data belongs to an organization and usually a farm site or crop cycle.
+- Traceability should anchor on first-class lot and dispatch records rather than
+  document metadata or free-text notes.
 - GAP rules are defined in immutable scheme-version records, while farm runtime
   state points at the exact active version for audit-safe exports.
 - `gapRecord` is the farm/runtime control instance, not the catalog definition
@@ -54,6 +64,17 @@
   GAP records remain pinned even after the farm adopts a newer ruleset.
 - `controlReviewState` and `correctiveAction` are runtime entities layered on
   top of append-only evidence reviews rather than replacements for them.
+
+## Traceability and retention notes
+
+- `traceLot` is the operational unit for trace-back and trace-forward.
+- `traceLotLineage` records split/merge/repack relationships in a queryable
+  relational graph.
+- `traceDispatch` is the outbound boundary for shipment, transfer, or recall.
+- `traceabilityEvent` is a domain event ledger separate from generic
+  `auditEvent`.
+- Retention belongs in explicit policy/hold/execution tables; do not hide it in
+  scattered nullable timestamps across source-of-truth tables.
 
 ## Document subsystem notes
 
