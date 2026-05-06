@@ -93,6 +93,12 @@ enum DocumentJobStatus {
   dead_letter
 }
 
+enum ComplianceSchemeStatus {
+  draft
+  active
+  retired
+}
+
 model Organization {
   id          String       @id @default(cuid())
   name        String
@@ -260,6 +266,77 @@ model GapChecklist {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   gapRecords  GapRecord[]
+  complianceControlPoints ComplianceControlPointVersion[]
+}
+
+model ComplianceScheme {
+  id            String                    @id @default(cuid())
+  code          String                    @unique
+  name          String
+  authorityName String?
+  status        ComplianceSchemeStatus    @default(active)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+  versions      ComplianceSchemeVersion[]
+}
+
+model ComplianceSchemeVersion {
+  id             String                         @id @default(cuid())
+  schemeId       String
+  versionLabel   String
+  publishedAt    DateTime?
+  effectiveFrom  DateTime?
+  effectiveTo    DateTime?
+  isDefault      Boolean                        @default(false)
+  createdAt      DateTime                       @default(now())
+  updatedAt      DateTime                       @updatedAt
+  scheme         ComplianceScheme               @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  sections       ComplianceSectionVersion[]
+  controlPoints  ComplianceControlPointVersion[]
+
+  @@unique([schemeId, versionLabel])
+  @@index([schemeId, isDefault])
+}
+
+model ComplianceSectionVersion {
+  id              String                         @id @default(cuid())
+  schemeVersionId String
+  code            String
+  title           String
+  description     String?
+  sequence        Int
+  createdAt       DateTime                       @default(now())
+  updatedAt       DateTime                       @updatedAt
+  schemeVersion   ComplianceSchemeVersion        @relation(fields: [schemeVersionId], references: [id], onDelete: Cascade)
+  controlPoints   ComplianceControlPointVersion[]
+  evidences       Evidence[]                     @relation("EvidenceComplianceSection")
+
+  @@unique([schemeVersionId, code])
+  @@index([schemeVersionId, sequence])
+}
+
+model ComplianceControlPointVersion {
+  id                   String                    @id @default(cuid())
+  schemeVersionId      String
+  sectionVersionId     String
+  legacyChecklistId    String?                   @unique
+  code                 String
+  title                String
+  requirementText      String?
+  guidanceText         String?
+  sequence             Int
+  isActive             Boolean                   @default(true)
+  requiresEvidence     Boolean                   @default(true)
+  requiresExpertReview Boolean                   @default(true)
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
+  schemeVersion        ComplianceSchemeVersion   @relation(fields: [schemeVersionId], references: [id], onDelete: Cascade)
+  sectionVersion       ComplianceSectionVersion  @relation(fields: [sectionVersionId], references: [id], onDelete: Cascade)
+  legacyChecklist      GapChecklist?             @relation(fields: [legacyChecklistId], references: [id], onDelete: SetNull)
+  evidences            Evidence[]                @relation("EvidenceComplianceControl")
+
+  @@unique([schemeVersionId, code])
+  @@index([sectionVersionId, sequence])
 }
 
 model GapRecord {
@@ -294,6 +371,8 @@ model Evidence {
   gapRecordId          String
   gapRecordVersionId   String?
   controlPointRef      String?
+  complianceSectionVersionId String?
+  complianceControlPointVersionId String?
   kind                 EvidenceKind
   storageKey           String
   fileName             String
@@ -319,6 +398,8 @@ model Evidence {
   document             Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
   supersededByEvidence Evidence?            @relation("EvidenceSupersession", fields: [supersededByEvidenceId], references: [id], onDelete: SetNull)
   supersedesEvidence   Evidence[]           @relation("EvidenceSupersession")
+  complianceSectionVersion ComplianceSectionVersion? @relation("EvidenceComplianceSection", fields: [complianceSectionVersionId], references: [id], onDelete: SetNull)
+  complianceControlPointVersion ComplianceControlPointVersion? @relation("EvidenceComplianceControl", fields: [complianceControlPointVersionId], references: [id], onDelete: SetNull)
   reviews              EvidenceReview[]
   correctiveActionLinks CorrectiveActionEvidence[]
 
@@ -328,6 +409,8 @@ model Evidence {
   @@index([organizationId, supersededByEvidenceId, reviewStatus])
   @@index([organizationId, reviewStatus, createdAt])
   @@index([organizationId, controlPointRef, reviewStatus])
+  @@index([organizationId, complianceSectionVersionId, reviewStatus])
+  @@index([organizationId, complianceControlPointVersionId, reviewStatus])
 }
 
 model GapRecordVersion {

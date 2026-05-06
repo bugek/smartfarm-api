@@ -5,6 +5,10 @@ import {
   requireOrganizationRole,
   requireTenantContext
 } from "../../auth/tenant-context.js";
+import {
+  complianceControlPointSummarySelect,
+  complianceSectionSummarySelect
+} from "../../lib/compliance.js";
 import { prisma } from "../../lib/prisma.js";
 
 export const reviewQueueRouter = Router();
@@ -24,6 +28,8 @@ const queueEvidenceSelect: any = {
   gapRecordId: true,
   gapRecordVersionId: true,
   controlPointRef: true,
+  complianceSectionVersionId: true,
+  complianceControlPointVersionId: true,
   reviewStatus: true,
   supersededByEvidenceId: true,
   submittedAt: true,
@@ -47,6 +53,12 @@ const queueEvidenceSelect: any = {
         }
       }
     }
+  },
+  complianceSectionVersion: {
+    select: complianceSectionSummarySelect
+  },
+  complianceControlPointVersion: {
+    select: complianceControlPointSummarySelect
   }
 };
 
@@ -79,20 +91,31 @@ reviewQueueRouter.get("/", async (req, res, next) => {
     if (typeof req.query.controlPointRef === "string") {
       where.controlPointRef = req.query.controlPointRef;
     }
+    if (typeof req.query.complianceSectionVersionId === "string") {
+      where.complianceSectionVersionId = req.query.complianceSectionVersionId;
+    }
+    if (typeof req.query.complianceControlPointVersionId === "string") {
+      where.complianceControlPointVersionId = req.query.complianceControlPointVersionId;
+    }
 
-    // Order: farm site name, then controlPointRef (acts as section sort key),
-    // then oldest submission first so backlog drains FIFO.
+    // Order: farm site name, then typed section/control sequence, with
+    // controlPointRef as the compatibility fallback, then oldest submission
+    // first so backlog drains FIFO.
     const items = await prisma.evidence.findMany({
       where,
       orderBy: [
         { gapRecord: { cropCycle: { farmSite: { name: "asc" } } } },
+        { complianceSectionVersion: { sequence: "asc" } },
+        { complianceSectionVersion: { code: "asc" } },
+        { complianceControlPointVersion: { sequence: "asc" } },
+        { complianceControlPointVersion: { code: "asc" } },
         { controlPointRef: "asc" },
         { submittedAt: "asc" },
         { createdAt: "asc" }
       ],
       take: 200,
       select: queueEvidenceSelect
-    });
+    } as any);
 
     const counts = await prisma.evidence.groupBy({
       by: ["reviewStatus"],
@@ -110,7 +133,13 @@ reviewQueueRouter.get("/", async (req, res, next) => {
 
     res.json({
       organizationId: tenant.organizationId,
-      filter: { status, farmSiteId: req.query.farmSiteId ?? null, controlPointRef: req.query.controlPointRef ?? null },
+      filter: {
+        status,
+        farmSiteId: req.query.farmSiteId ?? null,
+        controlPointRef: req.query.controlPointRef ?? null,
+        complianceSectionVersionId: req.query.complianceSectionVersionId ?? null,
+        complianceControlPointVersionId: req.query.complianceControlPointVersionId ?? null
+      },
       counts: counts.reduce<Record<string, number>>((acc, row: any) => {
         acc[row.reviewStatus] = row._count?.reviewStatus ?? 0;
         return acc;

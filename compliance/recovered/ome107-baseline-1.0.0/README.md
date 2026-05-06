@@ -5,7 +5,7 @@ This folder restores the authoritative **1.0.0 baseline context** needed by
 `1.1.0` and `1.2.0` revisions.
 
 Canonical workspace
-- `D:\work\smartfarm-api-ome110`
+- `D:\work\smartfarm-api`
 
 Live files of record
 - `compliance/usda-hgap-v1.json` (current live base ruleset; now `1.2.0`)

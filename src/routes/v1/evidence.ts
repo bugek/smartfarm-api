@@ -16,6 +16,11 @@ import {
   requireTenantContext
 } from "../../auth/tenant-context.js";
 import { writeAuditEvent } from "../../lib/audit.js";
+import {
+  complianceControlPointSummarySelect,
+  complianceSectionSummarySelect,
+  resolveEvidenceComplianceBinding
+} from "../../lib/compliance.js";
 import { prisma } from "../../lib/prisma.js";
 
 export const evidenceRouter = Router();
@@ -75,6 +80,8 @@ const evidenceSelect: any = {
   gapRecordId: true,
   gapRecordVersionId: true,
   controlPointRef: true,
+  complianceSectionVersionId: true,
+  complianceControlPointVersionId: true,
   kind: true,
   storageKey: true,
   fileName: true,
@@ -111,6 +118,12 @@ const evidenceSelect: any = {
     select: {
       id: true
     }
+  },
+  complianceSectionVersion: {
+    select: complianceSectionSummarySelect
+  },
+  complianceControlPointVersion: {
+    select: complianceControlPointSummarySelect
   }
 };
 
@@ -148,16 +161,48 @@ evidenceRouter.post(
       const payload = submitEvidenceSchema.parse(req.body);
       const supersedesEvidenceIds = normalizeDistinctIds(payload.supersedesEvidenceIds);
 
-      const gapRecord = await prisma.gapRecord.findFirst({
-        where: { id: payload.gapRecordId, organizationId: tenant.organizationId },
-        select: { id: true, currentVersionId: true }
-      } as any);
-      if (!gapRecord) {
+      const complianceBinding = await resolveEvidenceComplianceBinding({
+        organizationId: tenant.organizationId,
+        gapRecordId: payload.gapRecordId,
+        controlPointRef: payload.controlPointRef
+      });
+
+      if (complianceBinding.kind === "gap_record_not_found") {
         return res.status(404).json({
           error: { code: "gap_record_not_found", message: "GAP record not found in this organization." }
         });
       }
-      if (!gapRecord.currentVersionId) {
+      if (complianceBinding.kind === "control_point_mismatch") {
+        return res.status(409).json({
+          error: {
+            code: "control_point_mismatch",
+            message:
+              "controlPointRef does not match the GAP record's bound compliance control.",
+            details: {
+              expectedControlPointRef: complianceBinding.expectedControlPointRef,
+              receivedControlPointRef: complianceBinding.receivedControlPointRef
+            }
+          }
+        });
+      }
+      if (complianceBinding.kind !== "ok") {
+        return res.status(409).json({
+          error: {
+            code: "compliance_control_binding_missing",
+            message:
+              "Evidence requires a GAP record bound to a known compliance control or a matching legacy controlPointRef.",
+            details: {
+              lookupControlPointRef: complianceBinding.lookupControlPointRef
+            }
+          }
+        });
+      }
+
+      const gapRecord = await prisma.gapRecord.findFirst({
+        where: { id: complianceBinding.gapRecordId, organizationId: tenant.organizationId },
+        select: { id: true, currentVersionId: true }
+      } as any);
+      if (!gapRecord?.currentVersionId) {
         return res.status(409).json({
           error: {
             code: "gap_record_version_missing",
@@ -234,13 +279,15 @@ evidenceRouter.post(
       }
 
       const now = new Date();
-      const evidence = await prisma.$transaction(async (tx) => {
+      const evidence: any = await prisma.$transaction(async (tx) => {
         const created = await tx.evidence.create({
           data: {
             organizationId: tenant.organizationId,
-            gapRecordId: gapRecord.id,
+            gapRecordId: complianceBinding.gapRecordId,
             gapRecordVersionId: gapRecord.currentVersionId,
-            controlPointRef: payload.controlPointRef ?? null,
+            controlPointRef: complianceBinding.controlPointRef,
+            complianceSectionVersionId: complianceBinding.complianceSectionVersionId,
+            complianceControlPointVersionId: complianceBinding.complianceControlPointVersionId,
             kind,
             storageKey,
             fileName,
@@ -306,6 +353,8 @@ evidenceRouter.post(
           role: tenant.role,
           gapRecordId: evidence.gapRecordId,
           controlPointRef: evidence.controlPointRef,
+          complianceSectionVersionId: evidence.complianceSectionVersionId,
+          complianceControlPointVersionId: evidence.complianceControlPointVersionId,
           documentId: evidence.documentId,
           supersedesEvidenceIds,
           hasGeo: evidence.geoLat != null && evidence.geoLng != null,
@@ -345,7 +394,7 @@ evidenceRouter.post(
 evidenceRouter.get("/", async (req, res, next) => {
   try {
     const tenant = getTenantContext(res);
-    const where: Prisma.EvidenceWhereInput = { organizationId: tenant.organizationId };
+    const where: any = { organizationId: tenant.organizationId };
     const includeSuperseded = req.query.includeSuperseded === "true";
     const reviewStatus = typeof req.query.reviewStatus === "string" ? req.query.reviewStatus : undefined;
     if (reviewStatus && (Object.values(EvidenceReviewStatus) as string[]).includes(reviewStatus)) {
@@ -359,6 +408,12 @@ evidenceRouter.get("/", async (req, res, next) => {
     }
     if (typeof req.query.controlPointRef === "string") {
       where.controlPointRef = req.query.controlPointRef;
+    }
+    if (typeof req.query.complianceSectionVersionId === "string") {
+      where.complianceSectionVersionId = req.query.complianceSectionVersionId;
+    }
+    if (typeof req.query.complianceControlPointVersionId === "string") {
+      where.complianceControlPointVersionId = req.query.complianceControlPointVersionId;
     }
 
     const items = await prisma.evidence.findMany({
@@ -428,16 +483,18 @@ evidenceRouter.post(
       const tenant = getTenantContext(res);
       const payload = reviewSchema.parse(req.body);
 
-      const evidence = await prisma.evidence.findFirst({
+      const evidence: any = await prisma.evidence.findFirst({
         where: { id: String(req.params.id), organizationId: tenant.organizationId },
         select: {
           id: true,
           reviewStatus: true,
           gapRecordId: true,
           controlPointRef: true,
-          supersededByEvidenceId: true
+          supersededByEvidenceId: true,
+          complianceSectionVersionId: true,
+          complianceControlPointVersionId: true
         }
-      });
+      } as any);
       if (!evidence) {
         return res.status(404).json({
           error: { code: "evidence_not_found", message: "Evidence not found in this organization." }
@@ -496,6 +553,8 @@ evidenceRouter.post(
           reviewId: result.review.id,
           gapRecordId: evidence.gapRecordId,
           controlPointRef: evidence.controlPointRef,
+          complianceSectionVersionId: evidence.complianceSectionVersionId,
+          complianceControlPointVersionId: evidence.complianceControlPointVersionId,
           previousStatus: evidence.reviewStatus,
           nextStatus
         }

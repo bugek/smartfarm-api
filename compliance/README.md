@@ -181,7 +181,7 @@ Current revision: `1.2.0` (published). Coverage at this revision:
 
 ### What 1.2.0 added
 
-- Closed the full approved Phase 4.2 Field Operations delta from **OME-103**:
+- Closed the full approved Phase 4.2 Field Operations delta from **OME-108**:
   - `F-1.2`, `F-1.3` land-use infrastructure controls
   - `F-4.4`, `F-4.5` agricultural-water treatment and microbial die-off controls
   - `F-6.3` non-animal-origin growing media handling
