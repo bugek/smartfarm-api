@@ -28,6 +28,49 @@ enum EvidenceKind {
   document
 }
 
+enum EvidenceReviewStatus {
+  pending_review
+  verified
+  needs_rework
+}
+
+enum EvidenceReviewDecision {
+  verified
+  needs_rework
+  comment
+}
+
+enum DocumentKind {
+  image
+  video
+  pdf
+  spreadsheet
+  other
+}
+
+enum DocumentStatus {
+  pending_upload
+  uploaded
+  processing
+  ready
+  failed
+  quarantined
+}
+
+enum DocumentJobKind {
+  validate_blob
+  extract_text
+}
+
+enum DocumentJobStatus {
+  pending
+  running
+  succeeded
+  failed
+  retrying
+  dead_letter
+}
+
 model Organization {
   id          String       @id @default(cuid())
   name        String
@@ -36,8 +79,12 @@ model Organization {
   updatedAt   DateTime     @updatedAt
   memberships Membership[]
   farmSites   FarmSite[]
+  cropCycles  CropCycle[]
   gapRecords  GapRecord[]
   auditEvents AuditEvent[]
+  documents   Document[]
+  evidences   Evidence[]
+  evidenceReviews EvidenceReview[]
 }
 
 model User {
@@ -141,19 +188,51 @@ model GapRecord {
 }
 
 model Evidence {
-  id           String      @id @default(cuid())
-  gapRecordId  String
-  kind         EvidenceKind
-  storageKey   String
-  fileName     String
-  contentType  String?
-  fileSize     Int?
-  capturedAt   DateTime?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  gapRecord    GapRecord   @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+  id                   String               @id @default(cuid())
+  organizationId       String
+  gapRecordId          String
+  controlPointRef      String?
+  kind                 EvidenceKind
+  storageKey           String
+  fileName             String
+  contentType          String?
+  fileSize             Int?
+  capturedAt           DateTime?
+  geoLat               Float?
+  geoLng               Float?
+  noteText             String?
+  documentId           String?
+  submittedByUserId    String?
+  submittedAt          DateTime?
+  reviewStatus         EvidenceReviewStatus @default(pending_review)
+  lastReviewedByUserId String?
+  lastReviewedAt       DateTime?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  organization         Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  gapRecord            GapRecord            @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+  document             Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  reviews              EvidenceReview[]
 
   @@index([gapRecordId, kind])
+  @@index([documentId])
+  @@index([organizationId, reviewStatus, createdAt])
+  @@index([organizationId, controlPointRef, reviewStatus])
+}
+
+model EvidenceReview {
+  id               String                 @id @default(cuid())
+  evidenceId       String
+  organizationId   String
+  reviewerUserId   String
+  decision         EvidenceReviewDecision
+  comment          String
+  createdAt        DateTime               @default(now())
+  evidence         Evidence               @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  organization     Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([evidenceId, createdAt])
+  @@index([organizationId, decision, createdAt])
 }
 
 model AdvisoryComment {
@@ -183,3 +262,51 @@ model AuditEvent {
   @@index([organizationId, entityType, entityId])
 }
 
+model Document {
+  id              String         @id @default(cuid())
+  organizationId  String
+  uploadedByUserId String?
+  kind            DocumentKind
+  status          DocumentStatus @default(pending_upload)
+  fileName        String
+  contentType     String?
+  declaredSize    Int?
+  storageProvider String         @default("local_disk")
+  storageKey      String         @unique
+  blobSize        Int?
+  blobSha256      String?
+  uploadedAt      DateTime?
+  finalizedAt     DateTime?
+  failureReason   String?
+  metadataJson    Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  jobs            DocumentJob[]
+  evidences       Evidence[]
+
+  @@index([organizationId, status])
+  @@index([organizationId, createdAt])
+}
+
+model DocumentJob {
+  id             String            @id @default(cuid())
+  documentId     String
+  organizationId String
+  kind           DocumentJobKind
+  status         DocumentJobStatus @default(pending)
+  attemptCount   Int               @default(0)
+  maxAttempts    Int               @default(3)
+  scheduledAt    DateTime          @default(now())
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  lastErrorMessage String?
+  resultJson     Json?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  document       Document          @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([status, scheduledAt])
+  @@index([documentId, kind])
+  @@index([organizationId, status])
+}
