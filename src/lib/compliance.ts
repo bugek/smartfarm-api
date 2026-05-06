@@ -1,14 +1,13 @@
-import { Prisma } from "@prisma/client";
 import { prisma } from "./prisma.js";
 
-export const complianceSectionSummarySelect = {
+export const complianceSectionSummarySelect: any = {
   id: true,
   code: true,
   title: true,
   sequence: true
-} satisfies Prisma.ComplianceSectionVersionSelect;
+};
 
-export const complianceControlPointSummarySelect = {
+export const complianceControlPointSummarySelect: any = {
   id: true,
   code: true,
   title: true,
@@ -17,7 +16,7 @@ export const complianceControlPointSummarySelect = {
   sectionVersion: {
     select: complianceSectionSummarySelect
   }
-} satisfies Prisma.ComplianceControlPointVersionSelect;
+};
 
 type ComplianceBindingResult =
   | {
@@ -38,9 +37,7 @@ type ComplianceBindingResult =
       controlPointRef: string;
       complianceControlPointVersionId: string;
       complianceSectionVersionId: string;
-      complianceControlPoint: Prisma.ComplianceControlPointVersionGetPayload<{
-        select: typeof complianceControlPointSummarySelect;
-      }>;
+      complianceControlPoint: any;
     };
 
 export async function resolveEvidenceComplianceBinding(input: {
@@ -83,12 +80,12 @@ export async function resolveEvidenceComplianceBinding(input: {
   const lookupControlPointRef = gapRecordControlPointRef ?? requestedControlPointRef;
 
   const complianceControlPoint = gapRecord.checklistId
-    ? await prisma.complianceControlPointVersion.findFirst({
+    ? await (prisma as any).complianceControlPointVersion.findFirst({
         where: { legacyChecklistId: gapRecord.checklistId },
         select: complianceControlPointSummarySelect
       })
     : lookupControlPointRef
-      ? await prisma.complianceControlPointVersion.findFirst({
+      ? await (prisma as any).complianceControlPointVersion.findFirst({
           where: { code: lookupControlPointRef },
           select: complianceControlPointSummarySelect
         })

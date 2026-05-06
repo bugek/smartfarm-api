@@ -4,8 +4,10 @@ import {
   EvidenceKind,
   EvidenceReviewDecision,
   EvidenceReviewStatus,
+  GapRecordStatus,
   OrganizationRole,
-  Prisma
+  Prisma,
+  ReviewThreadStatus
 } from "@prisma/client";
 import { z } from "zod";
 import {
@@ -36,6 +38,7 @@ const submitEvidenceSchema = z
   .object({
     gapRecordId: z.string().min(1),
     controlPointRef: z.string().trim().min(1).max(120).optional(),
+    supersedesEvidenceIds: z.array(z.string().trim().min(1)).max(50).optional(),
     documentId: z.string().min(1).optional(),
     kind: z.enum(evidenceKindValues).optional(),
     fileName: z.string().trim().min(1).max(255).optional(),
@@ -71,10 +74,11 @@ const reviewSchema = z.object({
 // Helpers
 // ---------------------------------------------------------------------------
 
-const evidenceSelect = {
+const evidenceSelect: any = {
   id: true,
   organizationId: true,
   gapRecordId: true,
+  gapRecordVersionId: true,
   controlPointRef: true,
   complianceSectionVersionId: true,
   complianceControlPointVersionId: true,
@@ -88,6 +92,8 @@ const evidenceSelect = {
   geoLng: true,
   noteText: true,
   documentId: true,
+  supersededAt: true,
+  supersededByEvidenceId: true,
   submittedByUserId: true,
   submittedAt: true,
   reviewStatus: true,
@@ -107,13 +113,19 @@ const evidenceSelect = {
       finalizedAt: true
     }
   },
+  supersedesEvidence: {
+    orderBy: [{ submittedAt: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+    select: {
+      id: true
+    }
+  },
   complianceSectionVersion: {
     select: complianceSectionSummarySelect
   },
   complianceControlPointVersion: {
     select: complianceControlPointSummarySelect
   }
-} satisfies Prisma.EvidenceSelect;
+};
 
 function decisionToReviewStatus(
   decision: EvidenceReviewDecision,
@@ -147,6 +159,7 @@ evidenceRouter.post(
     try {
       const tenant = getTenantContext(res);
       const payload = submitEvidenceSchema.parse(req.body);
+      const supersedesEvidenceIds = normalizeDistinctIds(payload.supersedesEvidenceIds);
 
       const complianceBinding = await resolveEvidenceComplianceBinding({
         organizationId: tenant.organizationId,
@@ -172,7 +185,7 @@ evidenceRouter.post(
           }
         });
       }
-      if (complianceBinding.kind === "compliance_control_binding_missing") {
+      if (complianceBinding.kind !== "ok") {
         return res.status(409).json({
           error: {
             code: "compliance_control_binding_missing",
@@ -181,6 +194,37 @@ evidenceRouter.post(
             details: {
               lookupControlPointRef: complianceBinding.lookupControlPointRef
             }
+          }
+        });
+      }
+
+      const gapRecord = await prisma.gapRecord.findFirst({
+        where: { id: complianceBinding.gapRecordId, organizationId: tenant.organizationId },
+        select: { id: true, currentVersionId: true }
+      } as any);
+      if (!gapRecord?.currentVersionId) {
+        return res.status(409).json({
+          error: {
+            code: "gap_record_version_missing",
+            message: "GAP record is missing a current version and cannot accept new evidence yet."
+          }
+        });
+      }
+
+      const supersededEvidence = await loadSupersededEvidenceCandidates(
+        tenant.organizationId,
+        gapRecord.id,
+        supersedesEvidenceIds
+      );
+      const supersededEvidenceValidationError = validateSupersededEvidence(
+        supersedesEvidenceIds,
+        supersededEvidence
+      );
+      if (supersededEvidenceValidationError) {
+        return res.status(supersededEvidenceValidationError.status).json({
+          error: {
+            code: supersededEvidenceValidationError.code,
+            message: supersededEvidenceValidationError.message
           }
         });
       }
@@ -235,28 +279,67 @@ evidenceRouter.post(
       }
 
       const now = new Date();
-      const evidence = await prisma.evidence.create({
-        data: {
-          organizationId: tenant.organizationId,
-          gapRecordId: complianceBinding.gapRecordId,
-          controlPointRef: complianceBinding.controlPointRef,
-          complianceSectionVersionId: complianceBinding.complianceSectionVersionId,
-          complianceControlPointVersionId: complianceBinding.complianceControlPointVersionId,
-          kind,
-          storageKey,
-          fileName,
-          contentType: contentType ?? null,
-          fileSize: fileSize ?? null,
-          capturedAt: payload.capturedAt ?? null,
-          geoLat: payload.geoLat ?? null,
-          geoLng: payload.geoLng ?? null,
-          noteText: payload.noteText ?? null,
-          documentId: payload.documentId ?? null,
-          submittedByUserId: tenant.userId,
-          submittedAt: now,
-          reviewStatus: EvidenceReviewStatus.pending_review
-        },
-        select: evidenceSelect
+      const evidence: any = await prisma.$transaction(async (tx) => {
+        const created = await tx.evidence.create({
+          data: {
+            organizationId: tenant.organizationId,
+            gapRecordId: complianceBinding.gapRecordId,
+            gapRecordVersionId: gapRecord.currentVersionId,
+            controlPointRef: complianceBinding.controlPointRef,
+            complianceSectionVersionId: complianceBinding.complianceSectionVersionId,
+            complianceControlPointVersionId: complianceBinding.complianceControlPointVersionId,
+            kind,
+            storageKey,
+            fileName,
+            contentType: contentType ?? null,
+            fileSize: fileSize ?? null,
+            capturedAt: payload.capturedAt ?? null,
+            geoLat: payload.geoLat ?? null,
+            geoLng: payload.geoLng ?? null,
+            noteText: payload.noteText ?? null,
+            documentId: payload.documentId ?? null,
+            submittedByUserId: tenant.userId,
+            submittedAt: now,
+            reviewStatus: EvidenceReviewStatus.pending_review
+          },
+          select: {
+            id: true
+          }
+        } as any);
+
+        if (supersedesEvidenceIds.length > 0) {
+          await tx.evidence.updateMany({
+            where: {
+              id: {
+                in: supersedesEvidenceIds
+              },
+              organizationId: tenant.organizationId,
+              gapRecordId: gapRecord.id,
+              supersededByEvidenceId: null
+            },
+            data: {
+              supersededAt: now,
+              supersededByEvidenceId: created.id
+            }
+          } as any);
+        }
+
+        await tx.gapRecord.update({
+          where: {
+            id: gapRecord.id
+          },
+          data: {
+            status: GapRecordStatus.submitted,
+            reviewThreadStatus: ReviewThreadStatus.awaiting_review
+          }
+        } as any);
+
+        return tx.evidence.findUniqueOrThrow({
+          where: {
+            id: created.id
+          },
+          select: evidenceSelect
+        } as any);
       });
 
       await writeAuditEvent({
@@ -273,10 +356,29 @@ evidenceRouter.post(
           complianceSectionVersionId: evidence.complianceSectionVersionId,
           complianceControlPointVersionId: evidence.complianceControlPointVersionId,
           documentId: evidence.documentId,
+          supersedesEvidenceIds,
           hasGeo: evidence.geoLat != null && evidence.geoLng != null,
           capturedAt: evidence.capturedAt?.toISOString() ?? null
         }
       });
+
+      for (const superseded of supersededEvidence) {
+        await writeAuditEvent({
+          organizationId: tenant.organizationId,
+          actorUserId: tenant.userId,
+          entityType: "evidence",
+          entityId: superseded.id,
+          action: "evidence.superseded_by_resubmission",
+          payloadJson: {
+            membershipId: tenant.membershipId,
+            role: tenant.role,
+            gapRecordId: superseded.gapRecordId,
+            controlPointRef: superseded.controlPointRef,
+            replacementEvidenceId: evidence.id,
+            previousStatus: superseded.reviewStatus
+          }
+        });
+      }
 
       res.status(201).json({ item: evidence });
     } catch (error) {
@@ -292,10 +394,14 @@ evidenceRouter.post(
 evidenceRouter.get("/", async (req, res, next) => {
   try {
     const tenant = getTenantContext(res);
-    const where: Prisma.EvidenceWhereInput = { organizationId: tenant.organizationId };
+    const where: any = { organizationId: tenant.organizationId };
+    const includeSuperseded = req.query.includeSuperseded === "true";
     const reviewStatus = typeof req.query.reviewStatus === "string" ? req.query.reviewStatus : undefined;
     if (reviewStatus && (Object.values(EvidenceReviewStatus) as string[]).includes(reviewStatus)) {
       where.reviewStatus = reviewStatus as EvidenceReviewStatus;
+    }
+    if (!includeSuperseded) {
+      where.supersededByEvidenceId = null;
     }
     if (typeof req.query.gapRecordId === "string") {
       where.gapRecordId = req.query.gapRecordId;
@@ -315,8 +421,17 @@ evidenceRouter.get("/", async (req, res, next) => {
       orderBy: [{ reviewStatus: "asc" }, { submittedAt: "desc" }, { createdAt: "desc" }],
       take: 100,
       select: evidenceSelect
+    } as any);
+    res.json({
+      items,
+      organizationId: tenant.organizationId,
+      filter: {
+        reviewStatus: where.reviewStatus ?? null,
+        gapRecordId: where.gapRecordId ?? null,
+        controlPointRef: where.controlPointRef ?? null,
+        includeSuperseded
+      }
     });
-    res.json({ items, organizationId: tenant.organizationId });
   } catch (error) {
     next(error);
   }
@@ -340,7 +455,7 @@ evidenceRouter.get("/:id", async (req, res, next) => {
           }
         }
       }
-    });
+    } as any);
     if (!evidence) {
       return res.status(404).json({
         error: { code: "evidence_not_found", message: "Evidence not found in this organization." }
@@ -368,20 +483,29 @@ evidenceRouter.post(
       const tenant = getTenantContext(res);
       const payload = reviewSchema.parse(req.body);
 
-      const evidence = await prisma.evidence.findFirst({
+      const evidence: any = await prisma.evidence.findFirst({
         where: { id: String(req.params.id), organizationId: tenant.organizationId },
         select: {
           id: true,
           reviewStatus: true,
           gapRecordId: true,
           controlPointRef: true,
+          supersededByEvidenceId: true,
           complianceSectionVersionId: true,
           complianceControlPointVersionId: true
         }
-      });
+      } as any);
       if (!evidence) {
         return res.status(404).json({
           error: { code: "evidence_not_found", message: "Evidence not found in this organization." }
+        });
+      }
+      if (evidence.supersededByEvidenceId) {
+        return res.status(409).json({
+          error: {
+            code: "evidence_review_conflict",
+            message: "Superseded evidence cannot be reviewed again. Review the active replacement evidence instead."
+          }
         });
       }
 
@@ -413,7 +537,7 @@ evidenceRouter.post(
             lastReviewedByUserId: tenant.userId
           },
           select: evidenceSelect
-        });
+        } as any);
         return { review, updated };
       });
 
@@ -456,4 +580,76 @@ function mapDocumentKindToEvidence(kind: string): EvidenceKind {
     default:
       return EvidenceKind.document;
   }
+}
+
+function normalizeDistinctIds(ids?: string[]) {
+  return [...new Set((ids ?? []).map((value) => value.trim()).filter(Boolean))];
+}
+
+async function loadSupersededEvidenceCandidates(
+  organizationId: string,
+  gapRecordId: string,
+  evidenceIds: string[]
+) {
+  if (evidenceIds.length === 0) {
+    return [];
+  }
+
+  return prisma.evidence.findMany({
+    where: {
+      organizationId,
+      gapRecordId,
+      id: {
+        in: evidenceIds
+      }
+    },
+    select: {
+      id: true,
+      gapRecordId: true,
+      controlPointRef: true,
+      reviewStatus: true,
+      supersededByEvidenceId: true
+    }
+  });
+}
+
+function validateSupersededEvidence(
+  requestedIds: string[],
+  candidates: Array<{
+    id: string;
+    gapRecordId: string;
+    controlPointRef: string | null;
+    reviewStatus: EvidenceReviewStatus;
+    supersededByEvidenceId: string | null;
+  }>
+) {
+  if (requestedIds.length === 0) {
+    return null;
+  }
+
+  if (candidates.length !== requestedIds.length) {
+    return {
+      status: 400,
+      code: "evidence_resubmission_target_invalid",
+      message: "Replacement evidence can only supersede evidence from the same organization and GAP record."
+    };
+  }
+
+  if (candidates.some((candidate) => candidate.supersededByEvidenceId != null)) {
+    return {
+      status: 409,
+      code: "evidence_resubmission_target_conflict",
+      message: "One or more selected evidence items were already superseded by a newer submission."
+    };
+  }
+
+  if (candidates.some((candidate) => candidate.reviewStatus !== EvidenceReviewStatus.needs_rework)) {
+    return {
+      status: 409,
+      code: "evidence_resubmission_target_status_invalid",
+      message: "Only evidence in 'needs_rework' status can be superseded by a farmer correction submission."
+    };
+  }
+
+  return null;
 }

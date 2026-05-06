@@ -55,6 +55,13 @@ enum CorrectiveActionStatus {
   closed
 }
 
+enum GapRecordVersionReviewDecision {
+  approved
+  needs_more_evidence
+  blocking
+  comment
+}
+
 enum DocumentKind {
   image
   video
@@ -104,6 +111,8 @@ model Organization {
   workers     Worker[]
   operationLogs OperationLog[]
   gapRecords  GapRecord[]
+  gapRecordVersions GapRecordVersion[]
+  gapRecordVersionReviews GapRecordVersionReview[]
   auditEvents AuditEvent[]
   documents   Document[]
   evidences   Evidence[]
@@ -121,6 +130,8 @@ model User {
   updatedAt   DateTime      @updatedAt
   memberships Membership[]
   comments    AdvisoryComment[]
+  gapRecordVersions GapRecordVersion[]
+  gapRecordVersionReviews GapRecordVersionReview[]
   authSessions AuthSession[]
 }
 
@@ -333,6 +344,7 @@ model GapRecord {
   organizationId  String
   cropCycleId     String?
   checklistId     String?
+  currentVersionId String?
   title           String
   notes           String?
   status          GapRecordStatus @default(draft)
@@ -343,17 +355,21 @@ model GapRecord {
   organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   cropCycle       CropCycle?      @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
   checklist       GapChecklist?   @relation(fields: [checklistId], references: [id], onDelete: SetNull)
+  currentVersion  GapRecordVersion? @relation("GapRecordCurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
   evidences       Evidence[]
   comments        AdvisoryComment[]
   correctiveActions CorrectiveAction[]
+  versions        GapRecordVersion[] @relation("GapRecordVersions")
 
   @@index([organizationId, status])
+  @@index([organizationId, currentVersionId])
 }
 
 model Evidence {
   id                   String               @id @default(cuid())
   organizationId       String
   gapRecordId          String
+  gapRecordVersionId   String?
   controlPointRef      String?
   complianceSectionVersionId String?
   complianceControlPointVersionId String?
@@ -367,6 +383,8 @@ model Evidence {
   geoLng               Float?
   noteText             String?
   documentId           String?
+  supersededAt         DateTime?
+  supersededByEvidenceId String?
   submittedByUserId    String?
   submittedAt          DateTime?
   reviewStatus         EvidenceReviewStatus @default(pending_review)
@@ -376,18 +394,66 @@ model Evidence {
   updatedAt            DateTime             @updatedAt
   organization         Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   gapRecord            GapRecord            @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+  gapRecordVersion     GapRecordVersion?    @relation(fields: [gapRecordVersionId], references: [id], onDelete: SetNull)
   document             Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  supersededByEvidence Evidence?            @relation("EvidenceSupersession", fields: [supersededByEvidenceId], references: [id], onDelete: SetNull)
+  supersedesEvidence   Evidence[]           @relation("EvidenceSupersession")
   complianceSectionVersion ComplianceSectionVersion? @relation("EvidenceComplianceSection", fields: [complianceSectionVersionId], references: [id], onDelete: SetNull)
   complianceControlPointVersion ComplianceControlPointVersion? @relation("EvidenceComplianceControl", fields: [complianceControlPointVersionId], references: [id], onDelete: SetNull)
   reviews              EvidenceReview[]
   correctiveActionLinks CorrectiveActionEvidence[]
 
   @@index([gapRecordId, kind])
+  @@index([gapRecordVersionId])
   @@index([documentId])
+  @@index([organizationId, supersededByEvidenceId, reviewStatus])
   @@index([organizationId, reviewStatus, createdAt])
   @@index([organizationId, controlPointRef, reviewStatus])
   @@index([organizationId, complianceSectionVersionId, reviewStatus])
   @@index([organizationId, complianceControlPointVersionId, reviewStatus])
+}
+
+model GapRecordVersion {
+  id                   String                       @id @default(cuid())
+  gapRecordId          String
+  organizationId       String
+  versionNumber        Int
+  isCurrent            Boolean                      @default(true)
+  supersededAt         DateTime?
+  supersededByVersionId String?
+  createdByUserId      String?
+  titleSnapshot        String
+  notesSnapshot        String?
+  recordedAt           DateTime?
+  createdAt            DateTime                     @default(now())
+  gapRecord            GapRecord                    @relation("GapRecordVersions", fields: [gapRecordId], references: [id], onDelete: Cascade)
+  organization         Organization                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdByUser        User?                        @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  supersededByVersion  GapRecordVersion?            @relation("GapRecordVersionSupersession", fields: [supersededByVersionId], references: [id], onDelete: SetNull)
+  supersedesVersions   GapRecordVersion[]           @relation("GapRecordVersionSupersession")
+  currentForGapRecord  GapRecord[]                  @relation("GapRecordCurrentVersion")
+  reviews              GapRecordVersionReview[]
+  evidences            Evidence[]
+
+  @@unique([gapRecordId, versionNumber])
+  @@index([organizationId, gapRecordId, isCurrent])
+  @@index([organizationId, supersededByVersionId])
+}
+
+model GapRecordVersionReview {
+  id                String                         @id @default(cuid())
+  gapRecordVersionId String
+  organizationId    String
+  reviewerUserId    String
+  decision          GapRecordVersionReviewDecision
+  comment           String
+  createdAt         DateTime                       @default(now())
+  gapRecordVersion  GapRecordVersion               @relation(fields: [gapRecordVersionId], references: [id], onDelete: Cascade)
+  organization      Organization                   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  reviewer          User                           @relation(fields: [reviewerUserId], references: [id], onDelete: Cascade)
+
+  @@index([gapRecordVersionId, createdAt])
+  @@index([organizationId, decision, createdAt])
 }
 
 model EvidenceReview {
