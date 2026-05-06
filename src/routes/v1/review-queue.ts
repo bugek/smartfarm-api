@@ -19,9 +19,10 @@ reviewQueueRouter.use(
   ])
 );
 
-const queueEvidenceSelect = {
+const queueEvidenceSelect: any = {
   id: true,
   gapRecordId: true,
+  gapRecordVersionId: true,
   controlPointRef: true,
   reviewStatus: true,
   supersededByEvidenceId: true,
@@ -47,7 +48,7 @@ const queueEvidenceSelect = {
       }
     }
   }
-} satisfies Prisma.EvidenceSelect;
+};
 
 reviewQueueRouter.get("/", async (req, res, next) => {
   try {
@@ -59,10 +60,15 @@ reviewQueueRouter.get("/", async (req, res, next) => {
       ? (requestedStatus as EvidenceReviewStatus)
       : EvidenceReviewStatus.pending_review;
 
-    const where: Prisma.EvidenceWhereInput = {
+    const where: any = {
       organizationId: tenant.organizationId,
       reviewStatus: status,
-      supersededByEvidenceId: null
+      supersededByEvidenceId: null,
+      gapRecordVersion: {
+        is: {
+          isCurrent: true
+        }
+      }
     };
 
     if (typeof req.query.farmSiteId === "string") {
@@ -90,15 +96,23 @@ reviewQueueRouter.get("/", async (req, res, next) => {
 
     const counts = await prisma.evidence.groupBy({
       by: ["reviewStatus"],
-      where: { organizationId: tenant.organizationId, supersededByEvidenceId: null },
+      where: {
+        organizationId: tenant.organizationId,
+        supersededByEvidenceId: null,
+        gapRecordVersion: {
+          is: {
+            isCurrent: true
+          }
+        }
+      },
       _count: { reviewStatus: true }
-    });
+    } as any);
 
     res.json({
       organizationId: tenant.organizationId,
       filter: { status, farmSiteId: req.query.farmSiteId ?? null, controlPointRef: req.query.controlPointRef ?? null },
-      counts: counts.reduce<Record<string, number>>((acc, row) => {
-        acc[row.reviewStatus] = row._count.reviewStatus;
+      counts: counts.reduce<Record<string, number>>((acc, row: any) => {
+        acc[row.reviewStatus] = row._count?.reviewStatus ?? 0;
         return acc;
       }, {}),
       items

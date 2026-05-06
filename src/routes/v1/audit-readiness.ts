@@ -15,6 +15,10 @@ import {
   requireTenantContext
 } from "../../auth/tenant-context.js";
 import { prisma } from "../../lib/prisma.js";
+import {
+  resolveGapRecordCurrentReadinessStatus,
+  resolveGapRecordCurrentReviewState
+} from "./gap-record-workflow.js";
 import { isWorkflowActiveEvidence, resolveThreadStatus } from "./review-threads.js";
 
 const RULESET_NAME = "USDA H-GAP";
@@ -38,13 +42,14 @@ const correctiveActionStatusValues = Object.values(CorrectiveActionStatus) as [
   ...CorrectiveActionStatus[]
 ];
 
-const auditReadinessGapRecordSelect = {
+const auditReadinessGapRecordSelect: any = {
   id: true,
   organizationId: true,
   title: true,
   notes: true,
   status: true,
   reviewThreadStatus: true,
+  currentVersionId: true,
   recordedAt: true,
   createdAt: true,
   updatedAt: true,
@@ -82,6 +87,7 @@ const auditReadinessGapRecordSelect = {
     orderBy: [{ submittedAt: "asc" }, { createdAt: "asc" }, { id: "asc" }],
     select: {
       id: true,
+      gapRecordVersionId: true,
       controlPointRef: true,
       kind: true,
       storageKey: true,
@@ -111,6 +117,43 @@ const auditReadinessGapRecordSelect = {
           finalizedAt: true
         }
       },
+      reviews: {
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          decision: true,
+          comment: true,
+          reviewerUserId: true,
+          createdAt: true
+        }
+      }
+    }
+  },
+  currentVersion: {
+    select: {
+      id: true,
+      versionNumber: true,
+      titleSnapshot: true,
+      notesSnapshot: true,
+      recordedAt: true,
+      createdAt: true,
+      reviews: {
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          decision: true,
+          comment: true,
+          reviewerUserId: true,
+          createdAt: true
+        }
+      }
+    }
+  },
+  versions: {
+    orderBy: [{ versionNumber: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      versionNumber: true,
       reviews: {
         orderBy: [{ createdAt: "asc" }, { id: "asc" }],
         select: {
@@ -158,11 +201,9 @@ const auditReadinessGapRecordSelect = {
       }
     }
   }
-} satisfies Prisma.GapRecordSelect;
+};
 
-type AuditReadinessGapRecord = Prisma.GapRecordGetPayload<{
-  select: typeof auditReadinessGapRecordSelect;
-}>;
+type AuditReadinessGapRecord = any;
 
 type IdentityMap = Map<
   string,
@@ -237,7 +278,7 @@ async function buildAuditReadinessSnapshot(organizationId: string, farmSiteId?: 
       : {})
   };
 
-  const [organization, records, auditEvents] = await Promise.all([
+  const [organization, rawRecords, auditEvents] = await Promise.all([
     prisma.organization.findUniqueOrThrow({
       where: {
         id: organizationId
@@ -257,7 +298,7 @@ async function buildAuditReadinessSnapshot(organizationId: string, farmSiteId?: 
         { id: "asc" }
       ],
       select: auditReadinessGapRecordSelect
-    }),
+    } as any),
     prisma.auditEvent.findMany({
       where: {
         organizationId
@@ -275,17 +316,18 @@ async function buildAuditReadinessSnapshot(organizationId: string, farmSiteId?: 
       }
     })
   ]);
+  const records = rawRecords as AuditReadinessGapRecord[];
 
   const identities = await loadIdentityMap(organizationId, collectIdentityUserIds(records, auditEvents));
   const filteredAuditEvents = filterAuditEventsByFarmSite(records, auditEvents, farmSiteId);
   const sectionSummaries = buildSectionSummaries(records, identities);
   const openCorrectiveActions = records
-    .flatMap((record) => record.correctiveActions.map((action) => serializeCorrectiveAction(record, action, identities)))
-    .filter((action) => action.status !== CorrectiveActionStatus.closed)
+    .flatMap((record: any) => record.correctiveActions.map((action: any) => serializeCorrectiveAction(record, action, identities)))
+    .filter((action: any) => action.status !== CorrectiveActionStatus.closed)
     .sort(compareCorrectiveActions);
   const closedCorrectiveActions = records
-    .flatMap((record) => record.correctiveActions.map((action) => serializeCorrectiveAction(record, action, identities)))
-    .filter((action) => action.status === CorrectiveActionStatus.closed)
+    .flatMap((record: any) => record.correctiveActions.map((action: any) => serializeCorrectiveAction(record, action, identities)))
+    .filter((action: any) => action.status === CorrectiveActionStatus.closed)
     .sort(compareCorrectiveActions);
 
   const summary = buildSummary(records, openCorrectiveActions);
@@ -357,9 +399,10 @@ function buildSummary(records: AuditReadinessGapRecord[], openCorrectiveActions:
   for (const record of records) {
     const resolvedReviewThreadStatus = getResolvedReviewThreadStatus(record);
     const activeEvidences = getActiveWorkflowEvidence(record);
+    const currentReadinessStatus = getCurrentReadinessStatus(record);
     gapRecordStatusCounts[record.status] += 1;
     reviewThreadStatusCounts[resolvedReviewThreadStatus] += 1;
-    if (record.status === GapRecordStatus.approved) {
+    if (currentReadinessStatus === "ready") {
       totalApprovedRecords += 1;
     }
 
@@ -397,30 +440,11 @@ function buildSummary(records: AuditReadinessGapRecord[], openCorrectiveActions:
 }
 
 function buildSectionSummaries(records: AuditReadinessGapRecord[], identities: IdentityMap) {
-  const sections = new Map<
-    string,
-    {
-      key: string;
-      title: string | null;
-      gapRecordStatusCounts: Record<GapRecordStatus, number>;
-      reviewThreadStatusCounts: Record<ReviewThreadStatus, number>;
-      evidenceReviewStatusCounts: Record<EvidenceReviewStatus, number>;
-      correctiveActionStatusCounts: Record<CorrectiveActionStatus, number>;
-      overdueCorrectiveActions: number;
-      records: Array<{
-        id: string;
-        title: string;
-        status: GapRecordStatus;
-        reviewThreadStatus: ReviewThreadStatus;
-        farmSiteName: string | null;
-        openCorrectiveActions: number;
-      }>;
-      ownerCounts: Map<string, { userId: string; count: number }>;
-    }
-  >();
+  const sections = new Map<string, any>();
 
   for (const record of records) {
     const resolvedReviewThreadStatus = getResolvedReviewThreadStatus(record);
+    const currentReadinessStatus = getCurrentReadinessStatus(record);
     const key = deriveSectionKey(record.checklist?.code);
     const entry =
       sections.get(key) ??
@@ -432,8 +456,8 @@ function buildSectionSummaries(records: AuditReadinessGapRecord[], identities: I
         evidenceReviewStatusCounts: createCountMap(evidenceReviewStatusValues),
         correctiveActionStatusCounts: createCountMap(correctiveActionStatusValues),
         overdueCorrectiveActions: 0,
-        records: [],
-        ownerCounts: new Map<string, { userId: string; count: number }>()
+        records: [] as any[],
+        ownerCounts: new Map<string, any>()
       };
 
     entry.gapRecordStatusCounts[record.status] += 1;
@@ -468,6 +492,7 @@ function buildSectionSummaries(records: AuditReadinessGapRecord[], identities: I
       title: record.title,
       status: record.status,
       reviewThreadStatus: resolvedReviewThreadStatus,
+      currentReadinessStatus,
       farmSiteName: record.cropCycle?.farmSite.name ?? null,
       openCorrectiveActions
     });
@@ -484,7 +509,7 @@ function buildSectionSummaries(records: AuditReadinessGapRecord[], identities: I
         section.records.length === 0
           ? 0
           : Math.round(
-              (section.records.filter((record) => record.status === GapRecordStatus.approved).length /
+              (section.records.filter((record: any) => record.currentReadinessStatus === "ready").length /
                 section.records.length) *
                 100
             ),
@@ -517,6 +542,8 @@ function buildDetailedGapRecords(records: AuditReadinessGapRecord[], identities:
       notes: record.notes,
       status: record.status,
       reviewThreadStatus: getResolvedReviewThreadStatus(record),
+      currentReadinessStatus: getCurrentReadinessStatus(record),
+      currentReviewState: getCurrentReviewState(record),
       controlPointRef,
       controlPointSection: deriveSectionKey(controlPointRef),
       controlPointCatalog: record.checklist
@@ -540,8 +567,18 @@ function buildDetailedGapRecords(records: AuditReadinessGapRecord[], identities:
             plot: record.cropCycle.plot
           }
         : null,
-      evidences: record.evidences.map((evidence) => serializeEvidence(record, evidence, identities)),
-      threadComments: record.comments.map((comment) => {
+      currentVersion: record.currentVersion
+        ? {
+            id: record.currentVersion.id,
+            versionNumber: record.currentVersion.versionNumber,
+            titleSnapshot: record.currentVersion.titleSnapshot,
+            notesSnapshot: record.currentVersion.notesSnapshot,
+            recordedAt: record.currentVersion.recordedAt,
+            createdAt: record.currentVersion.createdAt
+          }
+        : null,
+      evidences: record.evidences.map((evidence: any) => serializeEvidence(record, evidence, identities)),
+      threadComments: record.comments.map((comment: any) => {
         const identity = identities.get(comment.authorUserId);
         return {
           id: comment.id,
@@ -554,7 +591,7 @@ function buildDetailedGapRecords(records: AuditReadinessGapRecord[], identities:
         };
       }),
       correctiveActions: record.correctiveActions
-        .map((action) => serializeCorrectiveAction(record, action, identities))
+        .map((action: any) => serializeCorrectiveAction(record, action, identities))
         .sort(compareCorrectiveActions)
     };
   });
@@ -562,8 +599,8 @@ function buildDetailedGapRecords(records: AuditReadinessGapRecord[], identities:
 
 function buildEvidenceManifest(records: AuditReadinessGapRecord[], identities: IdentityMap) {
   return records
-    .flatMap((record) =>
-      record.evidences.map((evidence) => serializeEvidence(record, evidence, identities))
+    .flatMap((record: any) =>
+      record.evidences.map((evidence: any) => serializeEvidence(record, evidence, identities))
     )
     .sort((left, right) => {
       const submittedAtLeft = left.submittedAt ?? left.createdAt;
@@ -577,8 +614,8 @@ function buildEvidenceManifest(records: AuditReadinessGapRecord[], identities: I
 
 function buildReviewHistory(records: AuditReadinessGapRecord[], identities: IdentityMap) {
   return records
-    .flatMap((record) => [
-      ...record.comments.map((comment) => {
+    .flatMap((record: any) => [
+      ...record.comments.map((comment: any) => {
         const identity = identities.get(comment.authorUserId);
         return {
           id: comment.id,
@@ -592,8 +629,8 @@ function buildReviewHistory(records: AuditReadinessGapRecord[], identities: Iden
           authorRole: identity?.role ?? null
         };
       }),
-      ...record.evidences.flatMap((evidence) =>
-        evidence.reviews.map((review) => {
+      ...record.evidences.flatMap((evidence: any) =>
+        evidence.reviews.map((review: any) => {
           const identity = identities.get(review.reviewerUserId);
           return {
             id: review.id,
@@ -601,6 +638,25 @@ function buildReviewHistory(records: AuditReadinessGapRecord[], identities: Iden
             evidenceId: evidence.id,
             controlPointRef: evidence.controlPointRef ?? record.checklist?.code ?? null,
             source: "evidence_review",
+            decision: review.decision,
+            body: review.comment,
+            createdAt: review.createdAt,
+            authorUserId: review.reviewerUserId,
+            authorName: identity?.name ?? review.reviewerUserId,
+            authorRole: identity?.role ?? null
+          };
+        })
+      ),
+      ...record.versions.flatMap((version: any) =>
+        version.reviews.map((review: any) => {
+          const identity = identities.get(review.reviewerUserId);
+          return {
+            id: review.id,
+            gapRecordId: record.id,
+            gapRecordVersionId: version.id,
+            gapRecordVersionNumber: version.versionNumber,
+            controlPointRef: record.checklist?.code ?? null,
+            source: "record_review",
             decision: review.decision,
             body: review.comment,
             createdAt: review.createdAt,
@@ -646,7 +702,7 @@ function serializeCorrectiveAction(
     closedAt: action.closedAt,
     createdAt: action.createdAt,
     updatedAt: action.updatedAt,
-    evidenceIds: action.evidenceLinks.map((link) => link.evidenceId)
+    evidenceIds: action.evidenceLinks.map((link: any) => link.evidenceId)
   };
 }
 
@@ -665,6 +721,7 @@ function serializeEvidence(
   return {
     id: evidence.id,
     gapRecordId: record.id,
+    gapRecordVersionId: evidence.gapRecordVersionId,
     gapRecordTitle: record.title,
     controlPointRef: evidence.controlPointRef ?? record.checklist?.code ?? null,
     controlPointSection: deriveSectionKey(evidence.controlPointRef ?? record.checklist?.code),
@@ -690,7 +747,7 @@ function serializeEvidence(
     lastReviewedAt: evidence.lastReviewedAt,
     createdAt: evidence.createdAt,
     document: evidence.document,
-    reviews: evidence.reviews.map((review) => {
+    reviews: evidence.reviews.map((review: any) => {
       const identity = identities.get(review.reviewerUserId);
       return {
         id: review.id,
@@ -750,9 +807,9 @@ function filterAuditEventsByFarmSite(
   }
 
   const gapRecordIds = new Set(records.map((record) => record.id));
-  const evidenceIds = new Set(records.flatMap((record) => record.evidences.map((evidence) => evidence.id)));
+  const evidenceIds = new Set(records.flatMap((record: any) => record.evidences.map((evidence: any) => evidence.id)));
   const correctiveActionIds = new Set(
-    records.flatMap((record) => record.correctiveActions.map((action) => action.id))
+    records.flatMap((record: any) => record.correctiveActions.map((action: any) => action.id))
   );
 
   return auditEvents.filter((event) => {
@@ -797,6 +854,12 @@ function collectIdentityUserIds(
         ids.add(evidence.lastReviewedByUserId);
       }
       for (const review of evidence.reviews) {
+        ids.add(review.reviewerUserId);
+      }
+    }
+
+    for (const version of record.versions) {
+      for (const review of version.reviews) {
         ids.add(review.reviewerUserId);
       }
     }
@@ -868,10 +931,10 @@ function deriveSectionKey(controlPointRef: string | null | undefined) {
 }
 
 function createCountMap<T extends string>(values: readonly T[]) {
-  return values.reduce<Record<T, number>>((acc, value) => {
+  return values.reduce<any>((acc, value) => {
     acc[value] = 0;
     return acc;
-  }, {} as Record<T, number>);
+  }, {});
 }
 
 function isOverdue(dueAt: Date, status: CorrectiveActionStatus) {
@@ -893,13 +956,30 @@ function isJsonObject(value: Prisma.JsonValue | null): value is Prisma.JsonObjec
 }
 
 function getActiveWorkflowEvidence(record: AuditReadinessGapRecord) {
-  return record.evidences.filter(isWorkflowActiveEvidence);
+  const currentVersionId = record.currentVersion?.id ?? null;
+  return record.evidences.filter(
+    (evidence: any) => evidence.gapRecordVersionId === currentVersionId && isWorkflowActiveEvidence(evidence)
+  );
 }
 
 function getResolvedReviewThreadStatus(record: AuditReadinessGapRecord) {
   return resolveThreadStatus(
     record.reviewThreadStatus,
-    getActiveWorkflowEvidence(record).map((evidence) => evidence.reviewStatus)
+    getActiveWorkflowEvidence(record).map((evidence: any) => evidence.reviewStatus)
+  );
+}
+
+function getCurrentReviewState(record: AuditReadinessGapRecord) {
+  return resolveGapRecordCurrentReviewState(
+    record.currentVersion?.reviews ?? [],
+    getActiveWorkflowEvidence(record).map((evidence: any) => evidence.reviewStatus)
+  );
+}
+
+function getCurrentReadinessStatus(record: AuditReadinessGapRecord) {
+  return resolveGapRecordCurrentReadinessStatus(
+    getCurrentReviewState(record),
+    getActiveWorkflowEvidence(record).map((evidence: any) => evidence.reviewStatus)
   );
 }
 

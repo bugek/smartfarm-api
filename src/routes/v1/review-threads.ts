@@ -1,11 +1,22 @@
-import { EvidenceReviewDecision, EvidenceReviewStatus, Prisma, ReviewThreadStatus } from "@prisma/client";
+import {
+  EvidenceReviewDecision,
+  EvidenceReviewStatus,
+  Prisma,
+  ReviewThreadStatus
+} from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+import {
+  resolveFarmerCorrectionAction,
+  resolveGapRecordCurrentReadinessStatus,
+  resolveGapRecordCurrentReviewState
+} from "./gap-record-workflow.js";
 
-const gapRecordReviewThreadSelect = {
+const gapRecordReviewThreadSelect: any = {
   id: true,
   organizationId: true,
   title: true,
   reviewThreadStatus: true,
+  currentVersionId: true,
   recordedAt: true,
   createdAt: true,
   updatedAt: true,
@@ -19,6 +30,7 @@ const gapRecordReviewThreadSelect = {
     orderBy: [{ submittedAt: "asc" }, { createdAt: "asc" }],
     select: {
       id: true,
+      gapRecordVersionId: true,
       fileName: true,
       kind: true,
       submittedAt: true,
@@ -38,6 +50,44 @@ const gapRecordReviewThreadSelect = {
       }
     }
   },
+  currentVersion: {
+    select: {
+      id: true,
+      versionNumber: true,
+      isCurrent: true,
+      titleSnapshot: true,
+      notesSnapshot: true,
+      recordedAt: true,
+      createdAt: true,
+      reviews: {
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          decision: true,
+          comment: true,
+          reviewerUserId: true,
+          createdAt: true
+        }
+      }
+    }
+  },
+  versions: {
+    orderBy: [{ versionNumber: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      versionNumber: true,
+      reviews: {
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          decision: true,
+          comment: true,
+          reviewerUserId: true,
+          createdAt: true
+        }
+      }
+    }
+  },
   comments: {
     orderBy: { createdAt: "asc" },
     select: {
@@ -47,11 +97,9 @@ const gapRecordReviewThreadSelect = {
       createdAt: true
     }
   }
-} satisfies Prisma.GapRecordSelect;
+};
 
-type GapRecordReviewThreadRecord = Prisma.GapRecordGetPayload<{
-  select: typeof gapRecordReviewThreadSelect;
-}>;
+type GapRecordReviewThreadRecord = any;
 
 type IdentityMap = Map<
   string,
@@ -68,7 +116,7 @@ export async function getReviewThread(
   const record = await prisma.gapRecord.findFirst({
     where: { id: gapRecordId, organizationId },
     select: gapRecordReviewThreadSelect
-  });
+  } as any);
 
   if (!record) {
     return null;
@@ -90,6 +138,11 @@ function collectAuthorUserIds(record: GapRecordReviewThreadRecord) {
   }
   for (const evidence of record.evidences) {
     for (const review of evidence.reviews) {
+      ids.add(review.reviewerUserId);
+    }
+  }
+  for (const version of record.versions) {
+    for (const review of version.reviews) {
       ids.add(review.reviewerUserId);
     }
   }
@@ -131,9 +184,21 @@ async function loadAuthorIdentities(organizationId: string, userIds: string[]): 
 }
 
 function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: IdentityMap) {
-  const activeEvidences = record.evidences.filter(isWorkflowActiveEvidence);
+  const currentVersionId = record.currentVersion?.id ?? null;
+  const currentVersionEvidences = record.evidences.filter(
+    (evidence: any) => evidence.gapRecordVersionId === currentVersionId
+  );
+  const activeEvidences = currentVersionEvidences.filter(isWorkflowActiveEvidence);
+  const currentReviewState = resolveGapRecordCurrentReviewState(
+    record.currentVersion?.reviews ?? [],
+    activeEvidences.map((evidence: any) => evidence.reviewStatus)
+  );
+  const currentReadinessStatus = resolveGapRecordCurrentReadinessStatus(
+    currentReviewState,
+    activeEvidences.map((evidence: any) => evidence.reviewStatus)
+  );
   const comments = [
-    ...record.comments.map((comment) => {
+    ...record.comments.map((comment: any) => {
       const identity = identities.get(comment.authorUserId);
       return {
         id: comment.id,
@@ -146,8 +211,8 @@ function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: 
         authorRole: identity?.role ?? null
       };
     }),
-    ...record.evidences.flatMap((evidence) =>
-      evidence.reviews.map((review) => {
+    ...record.evidences.flatMap((evidence: any) =>
+      evidence.reviews.map((review: any) => {
         const identity = identities.get(review.reviewerUserId);
         return {
           id: review.id,
@@ -166,6 +231,24 @@ function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: 
           evidenceSupersededByEvidenceId: evidence.supersededByEvidenceId
         };
       })
+    ),
+    ...record.versions.flatMap((version: any) =>
+      version.reviews.map((review: any) => {
+        const identity = identities.get(review.reviewerUserId);
+        return {
+          id: review.id,
+          reviewId: record.id,
+          source: "record_review" as const,
+          body: review.comment,
+          createdAt: review.createdAt,
+          authorUserId: review.reviewerUserId,
+          authorName: identity?.name ?? review.reviewerUserId,
+          authorRole: identity?.role ?? null,
+          decision: review.decision,
+          gapRecordVersionId: version.id,
+          gapRecordVersionNumber: version.versionNumber
+        };
+      })
     )
   ].sort((a, b) => {
     const timeDiff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -177,7 +260,7 @@ function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: 
   );
 
   const evidenceCounts = activeEvidences.reduce(
-    (acc, evidence) => {
+    (acc: any, evidence: any) => {
       acc.total += 1;
       if (evidence.reviewStatus === EvidenceReviewStatus.pending_review) acc.pendingReview += 1;
       if (evidence.reviewStatus === EvidenceReviewStatus.verified) acc.verified += 1;
@@ -196,14 +279,32 @@ function serializeReviewThread(record: GapRecordReviewThreadRecord, identities: 
     controlPointTitle: record.checklist?.title ?? null,
     status: resolveThreadStatus(
       record.reviewThreadStatus,
-      activeEvidences.map((evidence) => evidence.reviewStatus)
+      activeEvidences.map((evidence: any) => evidence.reviewStatus)
     ),
     submittedAt:
-      activeEvidences.find((evidence) => evidence.submittedAt)?.submittedAt ??
-      record.evidences.find((evidence) => evidence.submittedAt)?.submittedAt ??
+      activeEvidences.find((evidence: any) => evidence.submittedAt)?.submittedAt ??
+      record.evidences.find((evidence: any) => evidence.submittedAt)?.submittedAt ??
       record.recordedAt ??
       record.createdAt,
     updatedAt: latestActivityAt,
+    currentReviewState,
+    currentReadinessStatus,
+    recommendedCorrectionAction: resolveFarmerCorrectionAction(currentReviewState),
+    currentVersion: record.currentVersion
+      ? {
+          id: record.currentVersion.id,
+          versionNumber: record.currentVersion.versionNumber,
+          isCurrent: record.currentVersion.isCurrent,
+          titleSnapshot: record.currentVersion.titleSnapshot,
+          notesSnapshot: record.currentVersion.notesSnapshot,
+          recordedAt: record.currentVersion.recordedAt,
+          createdAt: record.currentVersion.createdAt,
+          latestReview:
+            record.currentVersion.reviews.length > 0
+              ? record.currentVersion.reviews[record.currentVersion.reviews.length - 1]
+              : null
+        }
+      : null,
     evidenceSummary: evidenceCounts,
     comments
   };

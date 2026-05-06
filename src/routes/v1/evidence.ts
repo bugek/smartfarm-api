@@ -4,8 +4,10 @@ import {
   EvidenceKind,
   EvidenceReviewDecision,
   EvidenceReviewStatus,
+  GapRecordStatus,
   OrganizationRole,
-  Prisma
+  Prisma,
+  ReviewThreadStatus
 } from "@prisma/client";
 import { z } from "zod";
 import {
@@ -67,10 +69,11 @@ const reviewSchema = z.object({
 // Helpers
 // ---------------------------------------------------------------------------
 
-const evidenceSelect = {
+const evidenceSelect: any = {
   id: true,
   organizationId: true,
   gapRecordId: true,
+  gapRecordVersionId: true,
   controlPointRef: true,
   kind: true,
   storageKey: true,
@@ -109,7 +112,7 @@ const evidenceSelect = {
       id: true
     }
   }
-} satisfies Prisma.EvidenceSelect;
+};
 
 function decisionToReviewStatus(
   decision: EvidenceReviewDecision,
@@ -147,11 +150,19 @@ evidenceRouter.post(
 
       const gapRecord = await prisma.gapRecord.findFirst({
         where: { id: payload.gapRecordId, organizationId: tenant.organizationId },
-        select: { id: true }
-      });
+        select: { id: true, currentVersionId: true }
+      } as any);
       if (!gapRecord) {
         return res.status(404).json({
           error: { code: "gap_record_not_found", message: "GAP record not found in this organization." }
+        });
+      }
+      if (!gapRecord.currentVersionId) {
+        return res.status(409).json({
+          error: {
+            code: "gap_record_version_missing",
+            message: "GAP record is missing a current version and cannot accept new evidence yet."
+          }
         });
       }
 
@@ -228,6 +239,7 @@ evidenceRouter.post(
           data: {
             organizationId: tenant.organizationId,
             gapRecordId: gapRecord.id,
+            gapRecordVersionId: gapRecord.currentVersionId,
             controlPointRef: payload.controlPointRef ?? null,
             kind,
             storageKey,
@@ -246,7 +258,7 @@ evidenceRouter.post(
           select: {
             id: true
           }
-        });
+        } as any);
 
         if (supersedesEvidenceIds.length > 0) {
           await tx.evidence.updateMany({
@@ -262,15 +274,25 @@ evidenceRouter.post(
               supersededAt: now,
               supersededByEvidenceId: created.id
             }
-          });
+          } as any);
         }
+
+        await tx.gapRecord.update({
+          where: {
+            id: gapRecord.id
+          },
+          data: {
+            status: GapRecordStatus.submitted,
+            reviewThreadStatus: ReviewThreadStatus.awaiting_review
+          }
+        } as any);
 
         return tx.evidence.findUniqueOrThrow({
           where: {
             id: created.id
           },
           select: evidenceSelect
-        });
+        } as any);
       });
 
       await writeAuditEvent({
@@ -344,7 +366,7 @@ evidenceRouter.get("/", async (req, res, next) => {
       orderBy: [{ reviewStatus: "asc" }, { submittedAt: "desc" }, { createdAt: "desc" }],
       take: 100,
       select: evidenceSelect
-    });
+    } as any);
     res.json({
       items,
       organizationId: tenant.organizationId,
@@ -378,7 +400,7 @@ evidenceRouter.get("/:id", async (req, res, next) => {
           }
         }
       }
-    });
+    } as any);
     if (!evidence) {
       return res.status(404).json({
         error: { code: "evidence_not_found", message: "Evidence not found in this organization." }
@@ -458,7 +480,7 @@ evidenceRouter.post(
             lastReviewedByUserId: tenant.userId
           },
           select: evidenceSelect
-        });
+        } as any);
         return { review, updated };
       });
 
