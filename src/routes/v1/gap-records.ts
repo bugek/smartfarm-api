@@ -7,6 +7,7 @@ import {
   requireTenantContext
 } from "../../auth/tenant-context.js";
 import { prisma } from "../../lib/prisma.js";
+import { getReviewThread } from "./review-threads.js";
 
 const gapRecordStatusValues = Object.values(GapRecordStatus) as [
   GapRecordStatus,
@@ -32,6 +33,7 @@ const gapRecordSelect = {
   title: true,
   notes: true,
   status: true,
+  reviewThreadStatus: true,
   recordedAt: true,
   createdAt: true,
   updatedAt: true,
@@ -157,6 +159,27 @@ gapRecordsRouter.get("/:id", async (req, res, next) => {
   }
 });
 
+gapRecordsRouter.get("/:id/reviews", async (req, res, next) => {
+  try {
+    const tenant = getTenantContext(res);
+    const gapRecordId = String(req.params.id);
+    const item = await getReviewThread(tenant.organizationId, gapRecordId);
+
+    if (!item) {
+      return res.status(404).json({
+        error: {
+          code: "gap_record_not_found",
+          message: "GAP record not found in this organization."
+        }
+      });
+    }
+
+    res.json({ item });
+  } catch (error) {
+    next(error);
+  }
+});
+
 gapRecordsRouter.patch(
   "/:id",
   requireOrganizationRole([
@@ -254,6 +277,7 @@ function serializeGapRecord(record: GapRecordPayload) {
     title: record.title,
     notes: record.notes,
     status: record.status,
+    reviewThreadStatus: record.reviewThreadStatus,
     recordedAt: record.recordedAt,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
