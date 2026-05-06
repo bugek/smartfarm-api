@@ -1,0 +1,185 @@
+{
+  "overlay_id": "USDA_HGAP_LEAFY_GREENS_V1",
+  "applies_to_scheme": "USDA_HGAP",
+  "applies_to_versions": ["3.1"],
+  "commodity": "leafy_greens",
+  "commodity_includes": [
+    "lettuce (head, leaf, romaine, butter, baby)",
+    "spinach",
+    "kale",
+    "chard",
+    "arugula",
+    "mixed leafy greens / spring mix",
+    "collards",
+    "endive / escarole"
+  ],
+  "ruleset_revision": "0.1.0",
+  "effective_date": "2026-01-01",
+  "status": "published",
+  "source_basis": [
+    "USDA AMS Harmonized GAP Field Operations and Harvesting checklist - leafy greens commodity-specific items",
+    "California LGMA / Arizona LGMA Accepted Food Safety Practices (cross-referenced for tightened thresholds)",
+    "FDA Produce Safety Rule subpart E (water) and subpart F (biological soil amendments) interpretations for leafy greens"
+  ],
+  "merge_semantics": {
+    "rule": "Engine loads base scheme + overlay. Overlay can ADD new controls or TIGHTEN existing thresholds (lower allowed levels, higher frequency, shorter intervals, additional evidence). Overlay MUST NOT relax any base control.",
+    "id_namespace": "Overlay control ids start with HGAP.LG.* and are distinct from base ids. Where an overlay control supersedes a base control, the overlay control sets supersedes_base_id pointing at the base id.",
+    "evidence_kind_vocabulary": "Inherits from base ruleset; overlay does not introduce new kinds in v1."
+  },
+  "controls": [
+    {
+      "id": "HGAP.LG.5.1",
+      "scheme": "USDA_HGAP",
+      "version": "2025.1",
+      "section": "Field Operations",
+      "subsection": "Animal Intrusion - Leafy Greens Buffer",
+      "title": "Mandatory no-harvest buffer around fecal contamination events",
+      "description": "When fecal contamination from animals (livestock, deer, geese, dogs) is observed in a leafy greens block, a no-harvest buffer is established around the contamination point. Default minimum buffer radius is 5 feet (1.5 m); document the buffer used and rationale if other than the default.",
+      "evidence_required": true,
+      "expert_review_required": true,
+      "supersedes_base_id": "HGAP.FO.5.1",
+      "evidence_spec": [
+        {"kind": "log_record", "guidance": "Buffer event log: block, date, contamination type, buffer radius applied, decision-maker."},
+        {"kind": "photo", "guidance": "Photo of flagged buffer with reference object for scale."},
+        {"kind": "note", "guidance": "If buffer radius differs from 5 ft default, attach written rationale referenced to LGMA / company SOP."}
+      ],
+      "references": [
+        {"label": "AMS HGAP Field Operations - leafy greens animal intrusion guidance", "locator": "F-5.1 (LG)"},
+        {"label": "LGMA Accepted Food Safety Practices - Animal Intrusion", "locator": "LGMA AFSP - Animal Intrusion"}
+      ]
+    },
+    {
+      "id": "HGAP.LG.5.2",
+      "scheme": "USDA_HGAP",
+      "version": "2025.1",
+      "section": "Field Operations",
+      "subsection": "Animal Intrusion - Significant Event Decision",
+      "title": "Significant intrusion event triggers crew supervisor + food safety review",
+      "description": "Where animal evidence in a leafy greens block exceeds a threshold of significance (e.g. multiple piles, large mammal incursion, livestock break-in), the crew supervisor halts harvest in the affected area and the food safety responsible person makes the harvest/no-harvest decision before resumption.",
+      "evidence_required": true,
+      "expert_review_required": true,
+      "evidence_spec": [
+        {"kind": "log_record", "guidance": "Significant event log: block, date, event description, crew action, food-safety decision, decision-maker, time of resumption (if any)."}
+      ],
+      "references": [
+        {"label": "LGMA AFSP - Significant Animal Intrusion", "locator": "LGMA AFSP - Animal Intrusion (significant event)"}
+      ]
+    },
+    {
+      "id": "HGAP.LG.2.1",
+      "scheme": "USDA_HGAP",
+      "version": "2025.1",
+      "section": "Field Operations",
+      "subsection": "Agricultural Water - Leafy Greens Testing Frequency",
+      "title": "Tightened microbial testing frequency for water contacting harvestable portion",
+      "description": "For leafy greens, water that contacts the harvestable portion (overhead irrigation, foliar spray carriers, harvest-aid water) is tested for generic E. coli at least monthly during the use season, in addition to base scheme requirements. Surface water sources require pre-season profile of at least 5 samples within 30 days before first use.",
+      "evidence_required": true,
+      "expert_review_required": true,
+      "supersedes_base_id": "HGAP.FO.2.2",
+      "evidence_spec": [
+        {"kind": "measurement", "guidance": "Monthly water test results: source id, sample date, generic E. coli MPN/100mL, lab id."},
+        {"kind": "document", "guidance": "Pre-season profile lab report (>=5 samples in 30 days) for each surface water source."}
+      ],
+      "references": [
+        {"label": "AMS HGAP Field Operations - leafy greens water guidance", "locator": "F-2.2 (LG)"},
+        {"label": "FDA Produce Safety Rule subpart E - covered produce", "locator": "21 CFR 112 subpart E"}
+      ]
+    },
+    {
+      "id": "HGAP.LG.2.2",
+      "scheme": "USDA_HGAP",
+      "version": "2025.1",
+      "section": "Field Operations",
+      "subsection": "Agricultural Water - Threshold for Action",
+      "title": "Threshold for water test action on leafy greens",
+      "description": "Any single agricultural water sample for leafy greens exceeding 126 CFU generic E. coli per 100 mL triggers immediate corrective action: stop use of that source for direct-contact applications until two consecutive resamples are below threshold, or apply a documented die-off interval before harvest.",
+      "evidence_required": true,
+      "expert_review_required": true,
+      "evidence_spec": [
+        {"kind": "log_record", "guidance": "Water exceedance event log: source, date, result, action taken, resample dates and results, harvest impact decision."},
+        {"kind": "document", "guidance": "Lab reports for the exceedance sample and resamples."}
+      ],
+      "references": [
+        {"label": "FDA Produce Safety Rule water quality criterion", "locator": "21 CFR 112.44"}
+      ]
+    },
+    {
+      "id": "HGAP.LG.6.1",
+      "scheme": "USDA_HGAP",
+      "version": "2025.1",
+      "section": "Field Operations",
+      "subsection": "Harvest Equipment - Leafy Greens Sanitation Cadence",
+      "title": "Daily sanitation of harvest knives, blades, and food-contact surfaces",
+      "description": "Harvest knives, machine blades, conveyor belts, and other food-contact surfaces used on leafy greens are cleaned and sanitized at the start of each harvest day and after any contamination event (animal intrusion, soil contact, breakage). Sanitizer concentration is measured and recorded.",
+      "evidence_required": true,
+      "expert_review_required": false,
+      "supersedes_base_id": "HGAP.FO.6.2",
+      "evidence_spec": [
+        {"kind": "log_record", "guidance": "Daily sanitation log: date, equipment, sanitizer, measured concentration, signer."},
+        {"kind": "measurement", "guidance": "Sanitizer concentration test strip / titration reading per cleaning event."},
+        {"kind": "photo", "guidance": "Photo of sanitized equipment ready for the day."}
+      ],
+      "references": [
+        {"label": "AMS HGAP Field Operations - leafy greens harvest equipment", "locator": "F-6.2 (LG)"},
+        {"label": "LGMA AFSP - Harvest Equipment Sanitation", "locator": "LGMA AFSP - Equipment"}
+      ]
+    },
+    {
+      "id": "HGAP.LG.7.1",
+      "scheme": "USDA_HGAP",
+      "version": "2025.1",
+      "section": "Field Operations",
+      "subsection": "Flooding - Mandatory No-Harvest",
+      "title": "Flooded leafy greens are not harvested",
+      "description": "Any portion of a leafy greens block that has been flooded with surface water of unknown quality during the production cycle is excluded from harvest. The exclusion decision is documented and the area is not returned to leafy greens production until risk assessment supports it.",
+      "evidence_required": true,
+      "expert_review_required": true,
+      "evidence_spec": [
+        {"kind": "log_record", "guidance": "Flood event log: block, date, area affected, water source, exclusion decision, decision-maker."},
+        {"kind": "photo", "guidance": "Photos of flooded area at time of event."},
+        {"kind": "document", "guidance": "If land is later returned to production, attach the post-event risk assessment."}
+      ],
+      "references": [
+        {"label": "FDA Produce Safety Rule - growing area flooded with pooled water", "locator": "21 CFR 112.45"},
+        {"label": "LGMA AFSP - Flooding", "locator": "LGMA AFSP - Flooding"}
+      ]
+    },
+    {
+      "id": "HGAP.LG.3.1",
+      "scheme": "USDA_HGAP",
+      "version": "2025.1",
+      "section": "Field Operations",
+      "subsection": "Soil Amendments - Untreated Manure Prohibition",
+      "title": "Raw / untreated manure is not applied to leafy greens production blocks",
+      "description": "Raw or untreated biological soil amendments of animal origin are not applied to land used for leafy greens production within the same crop cycle. Composted amendments must meet process documentation per base control HGAP.FO.3.1.",
+      "evidence_required": true,
+      "expert_review_required": true,
+      "supersedes_base_id": "HGAP.FO.3.2",
+      "evidence_spec": [
+        {"kind": "log_record", "guidance": "Soil amendment application log scoped to leafy greens blocks; should show no untreated amendments in current crop cycle."},
+        {"kind": "note", "guidance": "Reviewer attestation that policy is documented in operation's food safety program."}
+      ],
+      "references": [
+        {"label": "AMS HGAP Field Operations - leafy greens soil amendments", "locator": "F-3.2 (LG)"}
+      ]
+    },
+    {
+      "id": "HGAP.LG.6.2",
+      "scheme": "USDA_HGAP",
+      "version": "2025.1",
+      "section": "Field Operations",
+      "subsection": "Harvest - Pre-Harvest Risk Walk for Leafy Greens",
+      "title": "Documented pre-harvest risk walk within 24 hours of harvest",
+      "description": "A documented pre-harvest risk walk is performed within 24 hours of harvest start for each leafy greens block, covering animal intrusion evidence, water/flooding evidence, foreign material, adjacent land activity, and crew readiness.",
+      "evidence_required": true,
+      "expert_review_required": false,
+      "evidence_spec": [
+        {"kind": "log_record", "guidance": "Pre-harvest risk walk record: block, walk date/time, walker, observations (per category), action."},
+        {"kind": "photo", "guidance": "Optional photo of any flagged areas or buffers placed."}
+      ],
+      "references": [
+        {"label": "LGMA AFSP - Pre-Harvest Inspection", "locator": "LGMA AFSP - Pre-Harvest"}
+      ]
+    }
+  ]
+}

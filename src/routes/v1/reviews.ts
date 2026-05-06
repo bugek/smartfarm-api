@@ -1,5 +1,9 @@
 import express, { Router } from "express";
-import { OrganizationRole } from "@prisma/client";
+import {
+  GapRecordStatus,
+  OrganizationRole,
+  ReviewThreadStatus
+} from "@prisma/client";
 import { z } from "zod";
 import {
   getTenantContext,
@@ -18,9 +22,21 @@ const createReviewCommentSchema = z.object({
   body: z.string().trim().min(1).max(4000)
 });
 
+const versionReviewDecisionValues = [
+  "approved",
+  "needs_more_evidence",
+  "blocking",
+  "comment"
+] as const;
+
 const updateReviewSchema = z.object({
   status: z.enum(reviewThreadStatusValues),
   comment: z.string().trim().min(1).max(4000).optional()
+});
+
+const createVersionReviewSchema = z.object({
+  decision: z.enum(versionReviewDecisionValues),
+  comment: z.string().trim().min(1).max(4000)
 });
 
 export const reviewsRouter = Router();
@@ -183,6 +199,115 @@ reviewsRouter.patch(
 
       const item = await getReviewThread(tenant.organizationId, existing.id);
       res.json({ item });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+reviewsRouter.post(
+  "/:id/decisions",
+  requireOrganizationRole([
+    OrganizationRole.admin,
+    OrganizationRole.compliance_lead,
+    OrganizationRole.expert
+  ]),
+  async (req, res, next) => {
+    try {
+      const tenant = getTenantContext(res);
+      const reviewId = String(req.params.id);
+      const payload = createVersionReviewSchema.parse(req.body);
+
+      const existing: any = await prisma.gapRecord.findFirst({
+        where: { id: reviewId, organizationId: tenant.organizationId },
+        select: {
+          id: true,
+          currentVersionId: true,
+          checklist: { select: { code: true } }
+        }
+      } as any);
+
+      if (!existing) {
+        return res.status(404).json({
+          error: {
+            code: "review_not_found",
+            message: "Review thread not found in this organization."
+          }
+        });
+      }
+
+      if (!existing.currentVersionId) {
+        return res.status(409).json({
+          error: {
+            code: "gap_record_current_version_missing",
+            message: "Review thread cannot accept a record decision without a current GAP record version."
+          }
+        });
+      }
+
+      const gapRecordUpdate =
+        payload.decision === "approved"
+          ? {
+              status: GapRecordStatus.approved,
+              reviewThreadStatus: ReviewThreadStatus.approved
+            }
+          : payload.decision === "comment"
+            ? {}
+            : {
+                status: GapRecordStatus.needs_action,
+                reviewThreadStatus: ReviewThreadStatus.changes_requested
+              };
+
+      const review = await prisma.$transaction(async (tx) => {
+        const created = await (tx as any).gapRecordVersionReview.create({
+          data: {
+            gapRecordVersionId: existing.currentVersionId!,
+            organizationId: tenant.organizationId,
+            reviewerUserId: tenant.userId,
+            decision: payload.decision,
+            comment: payload.comment
+          },
+          select: {
+            id: true,
+            gapRecordVersionId: true,
+            decision: true,
+            comment: true,
+            reviewerUserId: true,
+            createdAt: true
+          }
+        });
+
+        if (Object.keys(gapRecordUpdate).length > 0) {
+          await tx.gapRecord.update({
+            where: {
+              id: existing.id
+            },
+            data: gapRecordUpdate
+          } as any);
+        }
+
+        await tx.auditEvent.create({
+          data: {
+            organizationId: tenant.organizationId,
+            actorUserId: tenant.userId,
+            entityType: "gap_record_version",
+            entityId: existing.currentVersionId!,
+            action: `gap_record_version.review_${payload.decision}`,
+            payloadJson: {
+              membershipId: tenant.membershipId,
+              role: tenant.role,
+              gapRecordId: existing.id,
+              controlPointRef: existing.checklist?.code ?? null,
+              reviewId: created.id
+            }
+          }
+        });
+
+        return created;
+      });
+
+      const item = await getReviewThread(tenant.organizationId, existing.id);
+      res.status(201).json({ item, review });
     } catch (error) {
       next(error);
     }
