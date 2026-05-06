@@ -4,10 +4,15 @@ This note records the Phase 1.1 sequencing decision from the board on
 2026-05-06: keep first launch focused on working corrective-action behavior,
 not spec expansion.
 
-Assumption: the canonical `OME-19b_CORRECTIVE_ACTION_WORKFLOW_SPEC.md`
-referenced in the Paperclip issue is not present in this repository today. This
-document is the repo-local engineering follow-up so implementation can proceed
-without waiting on a broader spec rewrite.
+The product-side workflow contract was later tightened and merged in
+`smartfarm-docs` under OME-115. Treat that merged docs-repo change as the
+product source of truth. This document remains the API-side implementation note
+for how SmartFarm API should satisfy that Phase 1 contract.
+
+The original `OME-19b_CORRECTIVE_ACTION_WORKFLOW_SPEC.md` referenced in the
+Paperclip issue is still not present in this repository. This note exists so
+the API repo retains a concrete engineering stance without duplicating the full
+product spec.
 
 ## Recommendation
 
