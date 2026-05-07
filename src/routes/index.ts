@@ -14,6 +14,8 @@ import { organizationsRouter } from "./v1/organizations.js";
 import { plotsRouter } from "./v1/plots.js";
 import { reviewQueueRouter } from "./v1/review-queue.js";
 import { reviewsRouter } from "./v1/reviews.js";
+import { retentionRouter } from "./v1/retention.js";
+import { traceabilityRouter } from "./v1/traceability.js";
 import { workersRouter } from "./v1/workers.js";
 
 export function registerRoutes(app: Express) {
@@ -39,6 +41,8 @@ export function registerRoutes(app: Express) {
   app.use("/api/v1/evidence", evidenceRouter);
   app.use("/api/v1/review-queue", reviewQueueRouter);
   app.use("/api/v1/reviews", reviewsRouter);
+  app.use("/api/v1/traceability", traceabilityRouter);
+  app.use("/api/v1/retention", retentionRouter);
 
   app.use((error: unknown, _req: Request, res: Response, _next: () => void) => {
     if (error instanceof ZodError) {
