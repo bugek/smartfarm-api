@@ -167,50 +167,71 @@ enum RetentionExecutionActorType {
   user
 }
 
+enum HazardousSubstanceProductStatus {
+  active
+  inactive
+}
+
+enum HazardousSubstanceStockEventType {
+  received
+  used
+  adjusted
+  disposed
+}
+
+enum HazardousSubstanceStorageCheckResult {
+  pass
+  needs_action
+}
+
 model Organization {
-  id          String       @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  memberships Membership[]
-  farmSites   FarmSite[]
-  cropCycles  CropCycle[]
-  workers     Worker[]
-  operationLogs OperationLog[]
-  gapRecords  GapRecord[]
-  gapRecordVersions GapRecordVersion[]
-  gapRecordVersionReviews GapRecordVersionReview[]
-  auditEvents AuditEvent[]
-  documents   Document[]
-  evidences   Evidence[]
-  evidenceReviews EvidenceReview[]
-  correctiveActions CorrectiveAction[]
-  correctiveActionEvidenceLinks CorrectiveActionEvidence[]
-  traceLots TraceLot[]
-  traceLotLineages TraceLotLineage[]
-  traceLotGapRecordLinks TraceLotGapRecord[]
-  traceDispatches TraceDispatch[]
-  traceDispatchLots TraceDispatchLot[]
-  traceabilityEvents TraceabilityEvent[]
-  traceabilityExercises TraceabilityExercise[]
-  retentionPolicies RetentionPolicy[]
-  retentionHolds RetentionHold[]
-  retentionExecutions RetentionExecution[]
+  id                              String                           @id @default(cuid())
+  name                            String
+  description                     String?
+  createdAt                       DateTime                         @default(now())
+  updatedAt                       DateTime                         @updatedAt
+  memberships                     Membership[]
+  farmSites                       FarmSite[]
+  cropCycles                      CropCycle[]
+  workers                         Worker[]
+  operationLogs                   OperationLog[]
+  gapRecords                      GapRecord[]
+  gapRecordVersions               GapRecordVersion[]
+  gapRecordVersionReviews         GapRecordVersionReview[]
+  auditEvents                     AuditEvent[]
+  documents                       Document[]
+  evidences                       Evidence[]
+  evidenceReviews                 EvidenceReview[]
+  correctiveActions               CorrectiveAction[]
+  correctiveActionEvidenceLinks   CorrectiveActionEvidence[]
+  traceLots                       TraceLot[]
+  traceLotLineages                TraceLotLineage[]
+  traceLotGapRecordLinks          TraceLotGapRecord[]
+  traceDispatches                 TraceDispatch[]
+  traceDispatchLots               TraceDispatchLot[]
+  traceabilityEvents              TraceabilityEvent[]
+  traceabilityExercises           TraceabilityExercise[]
+  retentionPolicies               RetentionPolicy[]
+  retentionHolds                  RetentionHold[]
+  retentionExecutions             RetentionExecution[]
+  hazardousSubstanceProducts      HazardousSubstanceProduct[]
+  hazardousSubstanceUseEvents     HazardousSubstanceUseEvent[]
+  hazardousSubstanceStockEvents   HazardousSubstanceStockEvent[]
+  hazardousSubstanceStorageChecks HazardousSubstanceStorageCheck[]
 }
 
 model User {
-  id          String        @id @default(cuid())
-  email       String        @unique
-  displayName String
-  passwordHash String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  memberships Membership[]
-  comments    AdvisoryComment[]
-  gapRecordVersions GapRecordVersion[]
+  id                      String                   @id @default(cuid())
+  email                   String                   @unique
+  displayName             String
+  passwordHash            String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  memberships             Membership[]
+  comments                AdvisoryComment[]
+  gapRecordVersions       GapRecordVersion[]
   gapRecordVersionReviews GapRecordVersionReview[]
-  authSessions AuthSession[]
+  authSessions            AuthSession[]
 }
 
 model AuthSession {
@@ -243,71 +264,78 @@ model Membership {
 }
 
 model FarmSite {
-  id             String      @id @default(cuid())
-  organizationId String
-  name           String
-  code           String?
-  locationText   String?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  plots          Plot[]
-  cropCycles     CropCycle[]
-  workers        Worker[]
-  operationLogs  OperationLog[]
-  traceLots      TraceLot[]
+  id                              String                           @id @default(cuid())
+  organizationId                  String
+  name                            String
+  code                            String?
+  locationText                    String?
+  createdAt                       DateTime                         @default(now())
+  updatedAt                       DateTime                         @updatedAt
+  organization                    Organization                     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  plots                           Plot[]
+  cropCycles                      CropCycle[]
+  workers                         Worker[]
+  operationLogs                   OperationLog[]
+  traceLots                       TraceLot[]
+  hazardousSubstanceUseEvents     HazardousSubstanceUseEvent[]
+  hazardousSubstanceStorageChecks HazardousSubstanceStorageCheck[]
 
   @@index([organizationId])
 }
 
 model Plot {
-  id          String    @id @default(cuid())
-  farmSiteId  String
-  name        String
-  areaRai     Float?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  farmSite    FarmSite  @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
-  cropCycles  CropCycle[]
-  operationLogs OperationLog[]
+  id                          String                       @id @default(cuid())
+  farmSiteId                  String
+  name                        String
+  areaRai                     Float?
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
+  farmSite                    FarmSite                     @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  cropCycles                  CropCycle[]
+  operationLogs               OperationLog[]
+  hazardousSubstanceUseEvents HazardousSubstanceUseEvent[]
 
   @@index([farmSiteId])
 }
 
 model CropCycle {
-  id             String      @id @default(cuid())
-  organizationId String
-  farmSiteId     String
-  plotId         String?
-  cropName       String
-  startedAt      DateTime?
-  endedAt        DateTime?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  farmSite       FarmSite    @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
-  plot           Plot?       @relation(fields: [plotId], references: [id], onDelete: SetNull)
-  operationLogs  OperationLog[]
-  gapRecords     GapRecord[]
-  traceLots      TraceLot[]
+  id                          String                       @id @default(cuid())
+  organizationId              String
+  farmSiteId                  String
+  plotId                      String?
+  cropName                    String
+  startedAt                   DateTime?
+  endedAt                     DateTime?
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
+  organization                Organization                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite                    FarmSite                     @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  plot                        Plot?                        @relation(fields: [plotId], references: [id], onDelete: SetNull)
+  operationLogs               OperationLog[]
+  gapRecords                  GapRecord[]
+  traceLots                   TraceLot[]
+  hazardousSubstanceUseEvents HazardousSubstanceUseEvent[]
 
   @@index([organizationId, farmSiteId])
 }
 
 model Worker {
-  id             String       @id @default(cuid())
-  organizationId String
-  farmSiteId     String?
-  fullName       String
-  phone          String?
-  roleTitle      String?
-  notes          String?
-  isActive       Boolean      @default(true)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  farmSite       FarmSite?    @relation(fields: [farmSiteId], references: [id], onDelete: SetNull)
-  operationLogs  OperationLog[]
+  id                              String                           @id @default(cuid())
+  organizationId                  String
+  farmSiteId                      String?
+  fullName                        String
+  phone                           String?
+  roleTitle                       String?
+  notes                           String?
+  isActive                        Boolean                          @default(true)
+  createdAt                       DateTime                         @default(now())
+  updatedAt                       DateTime                         @updatedAt
+  organization                    Organization                     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite                        FarmSite?                        @relation(fields: [farmSiteId], references: [id], onDelete: SetNull)
+  operationLogs                   OperationLog[]
+  hazardousSubstanceUseEvents     HazardousSubstanceUseEvent[]
+  hazardousSubstanceStockEvents   HazardousSubstanceStockEvent[]
+  hazardousSubstanceStorageChecks HazardousSubstanceStorageCheck[]
 
   @@index([organizationId, isActive, createdAt])
   @@index([farmSiteId])
@@ -338,14 +366,122 @@ model OperationLog {
   @@index([workerId, occurredAt])
 }
 
+model HazardousSubstanceProduct {
+  id                     String                          @id @default(cuid())
+  organizationId         String
+  name                   String
+  registrationNumber     String?
+  activeIngredient       String?
+  targetCrop             String?
+  labelRateText          String?
+  preHarvestIntervalDays Int?
+  status                 HazardousSubstanceProductStatus @default(active)
+  notes                  String?
+  createdAt              DateTime                        @default(now())
+  updatedAt              DateTime                        @updatedAt
+  organization           Organization                    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  useEvents              HazardousSubstanceUseEvent[]
+  stockEvents            HazardousSubstanceStockEvent[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId, status, createdAt])
+}
+
+model HazardousSubstanceUseEvent {
+  id                 String                         @id @default(cuid())
+  organizationId     String
+  farmSiteId         String
+  plotId             String
+  cropCycleId        String?
+  productId          String
+  workerId           String
+  appliedAt          DateTime
+  quantity           Float
+  quantityUnit       String
+  reason             String
+  applicationMethod  String?
+  targetPest         String?
+  weatherNotes       String?
+  evidenceDocumentId String
+  notes              String?
+  createdAt          DateTime                       @default(now())
+  updatedAt          DateTime                       @updatedAt
+  organization       Organization                   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite           FarmSite                       @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  plot               Plot                           @relation(fields: [plotId], references: [id], onDelete: Restrict)
+  cropCycle          CropCycle?                     @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
+  product            HazardousSubstanceProduct      @relation(fields: [productId], references: [id], onDelete: Restrict)
+  worker             Worker                         @relation(fields: [workerId], references: [id], onDelete: Restrict)
+  evidenceDocument   Document                       @relation("HazardousSubstanceUseEvidenceDocument", fields: [evidenceDocumentId], references: [id], onDelete: Restrict)
+  stockEvents        HazardousSubstanceStockEvent[]
+
+  @@index([organizationId, appliedAt])
+  @@index([organizationId, farmSiteId, appliedAt])
+  @@index([organizationId, plotId, appliedAt])
+  @@index([organizationId, productId, appliedAt])
+  @@index([organizationId, workerId, appliedAt])
+}
+
+model HazardousSubstanceStockEvent {
+  id                 String                           @id @default(cuid())
+  organizationId     String
+  productId          String
+  eventType          HazardousSubstanceStockEventType
+  occurredAt         DateTime
+  quantity           Float
+  quantityUnit       String
+  workerId           String?
+  useEventId         String?
+  evidenceDocumentId String?
+  reason             String?
+  notes              String?
+  createdAt          DateTime                         @default(now())
+  organization       Organization                     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  product            HazardousSubstanceProduct        @relation(fields: [productId], references: [id], onDelete: Restrict)
+  worker             Worker?                          @relation(fields: [workerId], references: [id], onDelete: SetNull)
+  useEvent           HazardousSubstanceUseEvent?      @relation(fields: [useEventId], references: [id], onDelete: SetNull)
+  evidenceDocument   Document?                        @relation("HazardousSubstanceStockEvidenceDocument", fields: [evidenceDocumentId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, productId, occurredAt])
+  @@index([organizationId, eventType, occurredAt])
+  @@index([organizationId, useEventId])
+}
+
+model HazardousSubstanceStorageCheck {
+  id                            String                               @id @default(cuid())
+  organizationId                String
+  farmSiteId                    String?
+  checkedAt                     DateTime
+  storageLocation               String
+  checkedByWorkerId             String?
+  approvedCropProductsSeparated Boolean
+  lockedStorage                 Boolean
+  labelsReadable                Boolean
+  sdsAvailable                  Boolean
+  spillKitAvailable             Boolean?
+  result                        HazardousSubstanceStorageCheckResult
+  issueNotes                    String?
+  evidenceDocumentId            String?
+  createdAt                     DateTime                             @default(now())
+  updatedAt                     DateTime                             @updatedAt
+  organization                  Organization                         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite                      FarmSite?                            @relation(fields: [farmSiteId], references: [id], onDelete: SetNull)
+  checkedByWorker               Worker?                              @relation(fields: [checkedByWorkerId], references: [id], onDelete: SetNull)
+  evidenceDocument              Document?                            @relation("HazardousSubstanceStorageEvidenceDocument", fields: [evidenceDocumentId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, checkedAt])
+  @@index([organizationId, result, checkedAt])
+  @@index([organizationId, farmSiteId, checkedAt])
+}
+
 model GapChecklist {
-  id          String      @id @default(cuid())
-  code        String      @unique
-  title       String
-  description String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  gapRecords  GapRecord[]
+  id                      String                          @id @default(cuid())
+  code                    String                          @unique
+  title                   String
+  description             String?
+  createdAt               DateTime                        @default(now())
+  updatedAt               DateTime                        @updatedAt
+  gapRecords              GapRecord[]
   complianceControlPoints ComplianceControlPointVersion[]
 }
 
@@ -361,128 +497,128 @@ model ComplianceScheme {
 }
 
 model ComplianceSchemeVersion {
-  id             String                         @id @default(cuid())
-  schemeId       String
-  versionLabel   String
-  publishedAt    DateTime?
-  effectiveFrom  DateTime?
-  effectiveTo    DateTime?
-  isDefault      Boolean                        @default(false)
-  createdAt      DateTime                       @default(now())
-  updatedAt      DateTime                       @updatedAt
-  scheme         ComplianceScheme               @relation(fields: [schemeId], references: [id], onDelete: Cascade)
-  sections       ComplianceSectionVersion[]
-  controlPoints  ComplianceControlPointVersion[]
+  id            String                          @id @default(cuid())
+  schemeId      String
+  versionLabel  String
+  publishedAt   DateTime?
+  effectiveFrom DateTime?
+  effectiveTo   DateTime?
+  isDefault     Boolean                         @default(false)
+  createdAt     DateTime                        @default(now())
+  updatedAt     DateTime                        @updatedAt
+  scheme        ComplianceScheme                @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  sections      ComplianceSectionVersion[]
+  controlPoints ComplianceControlPointVersion[]
 
   @@unique([schemeId, versionLabel])
   @@index([schemeId, isDefault])
 }
 
 model ComplianceSectionVersion {
-  id              String                         @id @default(cuid())
+  id              String                          @id @default(cuid())
   schemeVersionId String
   code            String
   title           String
   description     String?
   sequence        Int
-  createdAt       DateTime                       @default(now())
-  updatedAt       DateTime                       @updatedAt
-  schemeVersion   ComplianceSchemeVersion        @relation(fields: [schemeVersionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime                        @default(now())
+  updatedAt       DateTime                        @updatedAt
+  schemeVersion   ComplianceSchemeVersion         @relation(fields: [schemeVersionId], references: [id], onDelete: Cascade)
   controlPoints   ComplianceControlPointVersion[]
-  evidences       Evidence[]                     @relation("EvidenceComplianceSection")
+  evidences       Evidence[]                      @relation("EvidenceComplianceSection")
 
   @@unique([schemeVersionId, code])
   @@index([schemeVersionId, sequence])
 }
 
 model ComplianceControlPointVersion {
-  id                   String                    @id @default(cuid())
+  id                   String                   @id @default(cuid())
   schemeVersionId      String
   sectionVersionId     String
-  legacyChecklistId    String?                   @unique
+  legacyChecklistId    String?                  @unique
   code                 String
   title                String
   requirementText      String?
   guidanceText         String?
   sequence             Int
-  isActive             Boolean                   @default(true)
-  requiresEvidence     Boolean                   @default(true)
-  requiresExpertReview Boolean                   @default(true)
-  createdAt            DateTime                  @default(now())
-  updatedAt            DateTime                  @updatedAt
-  schemeVersion        ComplianceSchemeVersion   @relation(fields: [schemeVersionId], references: [id], onDelete: Cascade)
-  sectionVersion       ComplianceSectionVersion  @relation(fields: [sectionVersionId], references: [id], onDelete: Cascade)
-  legacyChecklist      GapChecklist?             @relation(fields: [legacyChecklistId], references: [id], onDelete: SetNull)
-  evidences            Evidence[]                @relation("EvidenceComplianceControl")
+  isActive             Boolean                  @default(true)
+  requiresEvidence     Boolean                  @default(true)
+  requiresExpertReview Boolean                  @default(true)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  schemeVersion        ComplianceSchemeVersion  @relation(fields: [schemeVersionId], references: [id], onDelete: Cascade)
+  sectionVersion       ComplianceSectionVersion @relation(fields: [sectionVersionId], references: [id], onDelete: Cascade)
+  legacyChecklist      GapChecklist?            @relation(fields: [legacyChecklistId], references: [id], onDelete: SetNull)
+  evidences            Evidence[]               @relation("EvidenceComplianceControl")
 
   @@unique([schemeVersionId, code])
   @@index([sectionVersionId, sequence])
 }
 
 model GapRecord {
-  id              String          @id @default(cuid())
-  organizationId  String
-  cropCycleId     String?
-  checklistId     String?
-  currentVersionId String?
-  title           String
-  notes           String?
-  status          GapRecordStatus @default(draft)
-  reviewThreadStatus ReviewThreadStatus @default(awaiting_review)
-  recordedAt      DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  cropCycle       CropCycle?      @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
-  checklist       GapChecklist?   @relation(fields: [checklistId], references: [id], onDelete: SetNull)
-  currentVersion  GapRecordVersion? @relation("GapRecordCurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
-  evidences       Evidence[]
-  comments        AdvisoryComment[]
-  correctiveActions CorrectiveAction[]
-  versions        GapRecordVersion[] @relation("GapRecordVersions")
-  traceLotLinks   TraceLotGapRecord[]
+  id                 String              @id @default(cuid())
+  organizationId     String
+  cropCycleId        String?
+  checklistId        String?
+  currentVersionId   String?
+  title              String
+  notes              String?
+  status             GapRecordStatus     @default(draft)
+  reviewThreadStatus ReviewThreadStatus  @default(awaiting_review)
+  recordedAt         DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  cropCycle          CropCycle?          @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
+  checklist          GapChecklist?       @relation(fields: [checklistId], references: [id], onDelete: SetNull)
+  currentVersion     GapRecordVersion?   @relation("GapRecordCurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  evidences          Evidence[]
+  comments           AdvisoryComment[]
+  correctiveActions  CorrectiveAction[]
+  versions           GapRecordVersion[]  @relation("GapRecordVersions")
+  traceLotLinks      TraceLotGapRecord[]
 
   @@index([organizationId, status])
   @@index([organizationId, currentVersionId])
 }
 
 model Evidence {
-  id                   String               @id @default(cuid())
-  organizationId       String
-  gapRecordId          String
-  gapRecordVersionId   String?
-  controlPointRef      String?
-  complianceSectionVersionId String?
+  id                              String                         @id @default(cuid())
+  organizationId                  String
+  gapRecordId                     String
+  gapRecordVersionId              String?
+  controlPointRef                 String?
+  complianceSectionVersionId      String?
   complianceControlPointVersionId String?
-  kind                 EvidenceKind
-  storageKey           String
-  fileName             String
-  contentType          String?
-  fileSize             Int?
-  capturedAt           DateTime?
-  geoLat               Float?
-  geoLng               Float?
-  noteText             String?
-  documentId           String?
-  supersededAt         DateTime?
-  supersededByEvidenceId String?
-  submittedByUserId    String?
-  submittedAt          DateTime?
-  reviewStatus         EvidenceReviewStatus @default(pending_review)
-  lastReviewedByUserId String?
-  lastReviewedAt       DateTime?
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt
-  organization         Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  gapRecord            GapRecord            @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
-  gapRecordVersion     GapRecordVersion?    @relation(fields: [gapRecordVersionId], references: [id], onDelete: SetNull)
-  document             Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
-  supersededByEvidence Evidence?            @relation("EvidenceSupersession", fields: [supersededByEvidenceId], references: [id], onDelete: SetNull)
-  supersedesEvidence   Evidence[]           @relation("EvidenceSupersession")
-  complianceSectionVersion ComplianceSectionVersion? @relation("EvidenceComplianceSection", fields: [complianceSectionVersionId], references: [id], onDelete: SetNull)
-  complianceControlPointVersion ComplianceControlPointVersion? @relation("EvidenceComplianceControl", fields: [complianceControlPointVersionId], references: [id], onDelete: SetNull)
-  reviews              EvidenceReview[]
-  correctiveActionLinks CorrectiveActionEvidence[]
+  kind                            EvidenceKind
+  storageKey                      String
+  fileName                        String
+  contentType                     String?
+  fileSize                        Int?
+  capturedAt                      DateTime?
+  geoLat                          Float?
+  geoLng                          Float?
+  noteText                        String?
+  documentId                      String?
+  supersededAt                    DateTime?
+  supersededByEvidenceId          String?
+  submittedByUserId               String?
+  submittedAt                     DateTime?
+  reviewStatus                    EvidenceReviewStatus           @default(pending_review)
+  lastReviewedByUserId            String?
+  lastReviewedAt                  DateTime?
+  createdAt                       DateTime                       @default(now())
+  updatedAt                       DateTime                       @updatedAt
+  organization                    Organization                   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  gapRecord                       GapRecord                      @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+  gapRecordVersion                GapRecordVersion?              @relation(fields: [gapRecordVersionId], references: [id], onDelete: SetNull)
+  document                        Document?                      @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  supersededByEvidence            Evidence?                      @relation("EvidenceSupersession", fields: [supersededByEvidenceId], references: [id], onDelete: SetNull)
+  supersedesEvidence              Evidence[]                     @relation("EvidenceSupersession")
+  complianceSectionVersion        ComplianceSectionVersion?      @relation("EvidenceComplianceSection", fields: [complianceSectionVersionId], references: [id], onDelete: SetNull)
+  complianceControlPointVersion   ComplianceControlPointVersion? @relation("EvidenceComplianceControl", fields: [complianceControlPointVersionId], references: [id], onDelete: SetNull)
+  reviews                         EvidenceReview[]
+  correctiveActionLinks           CorrectiveActionEvidence[]
 
   @@index([gapRecordId, kind])
   @@index([gapRecordVersionId])
@@ -495,26 +631,26 @@ model Evidence {
 }
 
 model GapRecordVersion {
-  id                   String                       @id @default(cuid())
-  gapRecordId          String
-  organizationId       String
-  versionNumber        Int
-  isCurrent            Boolean                      @default(true)
-  supersededAt         DateTime?
+  id                    String                   @id @default(cuid())
+  gapRecordId           String
+  organizationId        String
+  versionNumber         Int
+  isCurrent             Boolean                  @default(true)
+  supersededAt          DateTime?
   supersededByVersionId String?
-  createdByUserId      String?
-  titleSnapshot        String
-  notesSnapshot        String?
-  recordedAt           DateTime?
-  createdAt            DateTime                     @default(now())
-  gapRecord            GapRecord                    @relation("GapRecordVersions", fields: [gapRecordId], references: [id], onDelete: Cascade)
-  organization         Organization                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  createdByUser        User?                        @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
-  supersededByVersion  GapRecordVersion?            @relation("GapRecordVersionSupersession", fields: [supersededByVersionId], references: [id], onDelete: SetNull)
-  supersedesVersions   GapRecordVersion[]           @relation("GapRecordVersionSupersession")
-  currentForGapRecord  GapRecord[]                  @relation("GapRecordCurrentVersion")
-  reviews              GapRecordVersionReview[]
-  evidences            Evidence[]
+  createdByUserId       String?
+  titleSnapshot         String
+  notesSnapshot         String?
+  recordedAt            DateTime?
+  createdAt             DateTime                 @default(now())
+  gapRecord             GapRecord                @relation("GapRecordVersions", fields: [gapRecordId], references: [id], onDelete: Cascade)
+  organization          Organization             @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdByUser         User?                    @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  supersededByVersion   GapRecordVersion?        @relation("GapRecordVersionSupersession", fields: [supersededByVersionId], references: [id], onDelete: SetNull)
+  supersedesVersions    GapRecordVersion[]       @relation("GapRecordVersionSupersession")
+  currentForGapRecord   GapRecord[]              @relation("GapRecordCurrentVersion")
+  reviews               GapRecordVersionReview[]
+  evidences             Evidence[]
 
   @@unique([gapRecordId, versionNumber])
   @@index([organizationId, gapRecordId, isCurrent])
@@ -522,57 +658,57 @@ model GapRecordVersion {
 }
 
 model GapRecordVersionReview {
-  id                String                         @id @default(cuid())
+  id                 String                         @id @default(cuid())
   gapRecordVersionId String
-  organizationId    String
-  reviewerUserId    String
-  decision          GapRecordVersionReviewDecision
-  comment           String
-  createdAt         DateTime                       @default(now())
-  gapRecordVersion  GapRecordVersion               @relation(fields: [gapRecordVersionId], references: [id], onDelete: Cascade)
-  organization      Organization                   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  reviewer          User                           @relation(fields: [reviewerUserId], references: [id], onDelete: Cascade)
+  organizationId     String
+  reviewerUserId     String
+  decision           GapRecordVersionReviewDecision
+  comment            String
+  createdAt          DateTime                       @default(now())
+  gapRecordVersion   GapRecordVersion               @relation(fields: [gapRecordVersionId], references: [id], onDelete: Cascade)
+  organization       Organization                   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  reviewer           User                           @relation(fields: [reviewerUserId], references: [id], onDelete: Cascade)
 
   @@index([gapRecordVersionId, createdAt])
   @@index([organizationId, decision, createdAt])
 }
 
 model EvidenceReview {
-  id               String                 @id @default(cuid())
-  evidenceId       String
-  organizationId   String
-  reviewerUserId   String
-  decision         EvidenceReviewDecision
-  comment          String
-  createdAt        DateTime               @default(now())
-  evidence         Evidence               @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
-  organization     Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  id             String                 @id @default(cuid())
+  evidenceId     String
+  organizationId String
+  reviewerUserId String
+  decision       EvidenceReviewDecision
+  comment        String
+  createdAt      DateTime               @default(now())
+  evidence       Evidence               @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  organization   Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([evidenceId, createdAt])
   @@index([organizationId, decision, createdAt])
 }
 
 model AdvisoryComment {
-  id          String    @id @default(cuid())
-  gapRecordId String
+  id           String    @id @default(cuid())
+  gapRecordId  String
   authorUserId String
-  body        String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  gapRecord   GapRecord @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
-  author      User      @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+  body         String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  gapRecord    GapRecord @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+  author       User      @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
 
   @@index([gapRecordId, createdAt])
 }
 
 model CorrectiveAction {
-  id                   String                 @id @default(cuid())
+  id                   String                     @id @default(cuid())
   organizationId       String
   gapRecordId          String
   title                String
   details              String
   controlPointRef      String?
-  status               CorrectiveActionStatus @default(open_unassigned)
+  status               CorrectiveActionStatus     @default(open_unassigned)
   ownerUserId          String?
   createdByUserId      String
   dueAt                DateTime
@@ -580,10 +716,10 @@ model CorrectiveAction {
   submittedForReviewAt DateTime?
   verifiedAt           DateTime?
   closedAt             DateTime?
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  organization         Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  gapRecord            GapRecord              @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
+  organization         Organization               @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  gapRecord            GapRecord                  @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
   evidenceLinks        CorrectiveActionEvidence[]
 
   @@index([organizationId, status, dueAt])
@@ -621,48 +757,51 @@ model AuditEvent {
 }
 
 model Document {
-  id              String         @id @default(cuid())
-  organizationId  String
-  uploadedByUserId String?
-  kind            DocumentKind
-  status          DocumentStatus @default(pending_upload)
-  fileName        String
-  contentType     String?
-  declaredSize    Int?
-  storageProvider String         @default("local_disk")
-  storageKey      String         @unique
-  blobSize        Int?
-  blobSha256      String?
-  uploadedAt      DateTime?
-  finalizedAt     DateTime?
-  failureReason   String?
-  metadataJson    Json?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  jobs            DocumentJob[]
-  evidences       Evidence[]
+  id                              String                           @id @default(cuid())
+  organizationId                  String
+  uploadedByUserId                String?
+  kind                            DocumentKind
+  status                          DocumentStatus                   @default(pending_upload)
+  fileName                        String
+  contentType                     String?
+  declaredSize                    Int?
+  storageProvider                 String                           @default("local_disk")
+  storageKey                      String                           @unique
+  blobSize                        Int?
+  blobSha256                      String?
+  uploadedAt                      DateTime?
+  finalizedAt                     DateTime?
+  failureReason                   String?
+  metadataJson                    Json?
+  createdAt                       DateTime                         @default(now())
+  updatedAt                       DateTime                         @updatedAt
+  organization                    Organization                     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  jobs                            DocumentJob[]
+  evidences                       Evidence[]
+  hazardousSubstanceUseEvents     HazardousSubstanceUseEvent[]     @relation("HazardousSubstanceUseEvidenceDocument")
+  hazardousSubstanceStockEvents   HazardousSubstanceStockEvent[]   @relation("HazardousSubstanceStockEvidenceDocument")
+  hazardousSubstanceStorageChecks HazardousSubstanceStorageCheck[] @relation("HazardousSubstanceStorageEvidenceDocument")
 
   @@index([organizationId, status])
   @@index([organizationId, createdAt])
 }
 
 model DocumentJob {
-  id             String            @id @default(cuid())
-  documentId     String
-  organizationId String
-  kind           DocumentJobKind
-  status         DocumentJobStatus @default(pending)
-  attemptCount   Int               @default(0)
-  maxAttempts    Int               @default(3)
-  scheduledAt    DateTime          @default(now())
-  startedAt      DateTime?
-  finishedAt     DateTime?
+  id               String            @id @default(cuid())
+  documentId       String
+  organizationId   String
+  kind             DocumentJobKind
+  status           DocumentJobStatus @default(pending)
+  attemptCount     Int               @default(0)
+  maxAttempts      Int               @default(3)
+  scheduledAt      DateTime          @default(now())
+  startedAt        DateTime?
+  finishedAt       DateTime?
   lastErrorMessage String?
-  resultJson     Json?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  document       Document          @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  resultJson       Json?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  document         Document          @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([status, scheduledAt])
   @@index([documentId, kind])
@@ -670,7 +809,7 @@ model DocumentJob {
 }
 
 model TraceLot {
-  id              String         @id @default(cuid())
+  id              String                 @id @default(cuid())
   organizationId  String
   farmSiteId      String
   cropCycleId     String?
@@ -680,15 +819,15 @@ model TraceLot {
   packHouseName   String?
   harvestedAt     DateTime
   packedAt        DateTime?
-  status          TraceLotStatus @default(open)
+  status          TraceLotStatus         @default(open)
   createdByUserId String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  farmSite        FarmSite       @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
-  cropCycle       CropCycle?     @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
-  parentLineages  TraceLotLineage[] @relation("TraceLotLineageParent")
-  childLineages   TraceLotLineage[] @relation("TraceLotLineageChild")
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  organization    Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite        FarmSite               @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  cropCycle       CropCycle?             @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
+  parentLineages  TraceLotLineage[]      @relation("TraceLotLineageParent")
+  childLineages   TraceLotLineage[]      @relation("TraceLotLineageChild")
   gapRecordLinks  TraceLotGapRecord[]
   dispatchLots    TraceDispatchLot[]
   events          TraceabilityEvent[]
@@ -701,17 +840,17 @@ model TraceLot {
 }
 
 model TraceLotLineage {
-  id               String                           @id @default(cuid())
+  id               String                          @id @default(cuid())
   organizationId   String
   parentLotId      String
   childLotId       String
   relationshipType TraceLotLineageRelationshipType
   notes            String?
   createdByUserId  String?
-  createdAt        DateTime                         @default(now())
-  organization     Organization                     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  parentLot        TraceLot                         @relation("TraceLotLineageParent", fields: [parentLotId], references: [id], onDelete: Cascade)
-  childLot         TraceLot                         @relation("TraceLotLineageChild", fields: [childLotId], references: [id], onDelete: Cascade)
+  createdAt        DateTime                        @default(now())
+  organization     Organization                    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parentLot        TraceLot                        @relation("TraceLotLineageParent", fields: [parentLotId], references: [id], onDelete: Cascade)
+  childLot         TraceLot                        @relation("TraceLotLineageChild", fields: [childLotId], references: [id], onDelete: Cascade)
 
   @@unique([parentLotId, childLotId, relationshipType])
   @@index([organizationId, parentLotId])
