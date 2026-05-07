@@ -99,6 +99,74 @@ enum ComplianceSchemeStatus {
   retired
 }
 
+enum TraceLotStatus {
+  open
+  on_hold
+  released
+  shipped
+  recalled
+  closed
+}
+
+enum TraceLotLineageRelationshipType {
+  split
+  merge
+  repack
+  relabel
+}
+
+enum TraceLotGapRecordLinkType {
+  evidence_source
+  release_gate
+  supporting_record
+}
+
+enum TraceDispatchDestinationType {
+  customer
+  warehouse
+  processor
+  internal
+}
+
+enum TraceDispatchStatus {
+  draft
+  dispatched
+  acknowledged
+  recalled
+  cancelled
+}
+
+enum TraceabilityExerciseStatus {
+  draft
+  running
+  completed
+  failed
+}
+
+enum RetentionSubjectType {
+  gap_record
+  evidence
+  document
+  trace_lot
+  trace_dispatch
+  traceability_exercise
+  audit_packet
+  derived_artifact
+  job_artifact
+}
+
+enum RetentionExecutionDecision {
+  archived
+  purged
+  skipped_hold
+  skipped_not_due
+}
+
+enum RetentionExecutionActorType {
+  system
+  user
+}
+
 model Organization {
   id          String       @id @default(cuid())
   name        String
@@ -119,6 +187,16 @@ model Organization {
   evidenceReviews EvidenceReview[]
   correctiveActions CorrectiveAction[]
   correctiveActionEvidenceLinks CorrectiveActionEvidence[]
+  traceLots TraceLot[]
+  traceLotLineages TraceLotLineage[]
+  traceLotGapRecordLinks TraceLotGapRecord[]
+  traceDispatches TraceDispatch[]
+  traceDispatchLots TraceDispatchLot[]
+  traceabilityEvents TraceabilityEvent[]
+  traceabilityExercises TraceabilityExercise[]
+  retentionPolicies RetentionPolicy[]
+  retentionHolds RetentionHold[]
+  retentionExecutions RetentionExecution[]
 }
 
 model User {
@@ -177,6 +255,7 @@ model FarmSite {
   cropCycles     CropCycle[]
   workers        Worker[]
   operationLogs  OperationLog[]
+  traceLots      TraceLot[]
 
   @@index([organizationId])
 }
@@ -210,6 +289,7 @@ model CropCycle {
   plot           Plot?       @relation(fields: [plotId], references: [id], onDelete: SetNull)
   operationLogs  OperationLog[]
   gapRecords     GapRecord[]
+  traceLots      TraceLot[]
 
   @@index([organizationId, farmSiteId])
 }
@@ -360,6 +440,7 @@ model GapRecord {
   comments        AdvisoryComment[]
   correctiveActions CorrectiveAction[]
   versions        GapRecordVersion[] @relation("GapRecordVersions")
+  traceLotLinks   TraceLotGapRecord[]
 
   @@index([organizationId, status])
   @@index([organizationId, currentVersionId])
@@ -586,4 +667,205 @@ model DocumentJob {
   @@index([status, scheduledAt])
   @@index([documentId, kind])
   @@index([organizationId, status])
+}
+
+model TraceLot {
+  id              String         @id @default(cuid())
+  organizationId  String
+  farmSiteId      String
+  cropCycleId     String?
+  code            String
+  commodityName   String
+  varietyName     String?
+  packHouseName   String?
+  harvestedAt     DateTime
+  packedAt        DateTime?
+  status          TraceLotStatus @default(open)
+  createdByUserId String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite        FarmSite       @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  cropCycle       CropCycle?     @relation(fields: [cropCycleId], references: [id], onDelete: SetNull)
+  parentLineages  TraceLotLineage[] @relation("TraceLotLineageParent")
+  childLineages   TraceLotLineage[] @relation("TraceLotLineageChild")
+  gapRecordLinks  TraceLotGapRecord[]
+  dispatchLots    TraceDispatchLot[]
+  events          TraceabilityEvent[]
+  targetExercises TraceabilityExercise[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, harvestedAt])
+  @@index([organizationId, cropCycleId, status])
+  @@index([farmSiteId])
+}
+
+model TraceLotLineage {
+  id               String                           @id @default(cuid())
+  organizationId   String
+  parentLotId      String
+  childLotId       String
+  relationshipType TraceLotLineageRelationshipType
+  notes            String?
+  createdByUserId  String?
+  createdAt        DateTime                         @default(now())
+  organization     Organization                     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parentLot        TraceLot                         @relation("TraceLotLineageParent", fields: [parentLotId], references: [id], onDelete: Cascade)
+  childLot         TraceLot                         @relation("TraceLotLineageChild", fields: [childLotId], references: [id], onDelete: Cascade)
+
+  @@unique([parentLotId, childLotId, relationshipType])
+  @@index([organizationId, parentLotId])
+  @@index([organizationId, childLotId])
+}
+
+model TraceLotGapRecord {
+  id              String                    @id @default(cuid())
+  organizationId  String
+  lotId           String
+  gapRecordId     String
+  linkType        TraceLotGapRecordLinkType
+  createdByUserId String?
+  createdAt       DateTime                  @default(now())
+  organization    Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lot             TraceLot                  @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  gapRecord       GapRecord                 @relation(fields: [gapRecordId], references: [id], onDelete: Cascade)
+
+  @@unique([lotId, gapRecordId, linkType])
+  @@index([organizationId, lotId])
+  @@index([organizationId, gapRecordId])
+}
+
+model TraceDispatch {
+  id              String                       @id @default(cuid())
+  organizationId  String
+  code            String
+  destinationName String
+  destinationType TraceDispatchDestinationType
+  shippedAt       DateTime
+  status          TraceDispatchStatus          @default(draft)
+  externalRefJson Json?
+  createdByUserId String?
+  createdAt       DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
+  organization    Organization                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lots            TraceDispatchLot[]
+  events          TraceabilityEvent[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, shippedAt])
+}
+
+model TraceDispatchLot {
+  id             String        @id @default(cuid())
+  organizationId String
+  dispatchId     String
+  lotId          String
+  quantity       Float
+  unit           String
+  createdAt      DateTime      @default(now())
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  dispatch       TraceDispatch @relation(fields: [dispatchId], references: [id], onDelete: Cascade)
+  lot            TraceLot      @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@unique([dispatchId, lotId])
+  @@index([organizationId, dispatchId])
+  @@index([organizationId, lotId])
+}
+
+model TraceabilityEvent {
+  id             String                @id @default(cuid())
+  organizationId String
+  lotId          String?
+  dispatchId     String?
+  exerciseId     String?
+  actorUserId    String?
+  eventType      String
+  occurredAt     DateTime
+  payloadJson    Json?
+  createdAt      DateTime              @default(now())
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lot            TraceLot?             @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  dispatch       TraceDispatch?        @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
+  exercise       TraceabilityExercise? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, occurredAt])
+  @@index([organizationId, lotId, occurredAt])
+  @@index([organizationId, dispatchId, occurredAt])
+  @@index([organizationId, exerciseId, occurredAt])
+}
+
+model TraceabilityExercise {
+  id                String                     @id @default(cuid())
+  organizationId    String
+  targetLotId       String
+  status            TraceabilityExerciseStatus @default(running)
+  startedAt         DateTime                   @default(now())
+  completedAt       DateTime?
+  initiatedByUserId String?
+  resultJson        Json?
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+  organization      Organization               @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  targetLot         TraceLot                   @relation(fields: [targetLotId], references: [id], onDelete: Cascade)
+  events            TraceabilityEvent[]
+
+  @@index([organizationId, targetLotId, status])
+  @@index([organizationId, startedAt])
+}
+
+model RetentionPolicy {
+  id               String               @id @default(cuid())
+  organizationId   String?
+  subjectType      RetentionSubjectType
+  retainDays       Int
+  archiveAfterDays Int?
+  purgeAfterDays   Int?
+  legalBasis       String?
+  activeFrom       DateTime             @default(now())
+  activeTo         DateTime?
+  isDefault        Boolean              @default(false)
+  createdByUserId  String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  organization     Organization?        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  executions       RetentionExecution[]
+
+  @@index([organizationId, subjectType, activeFrom])
+  @@index([subjectType, isDefault])
+}
+
+model RetentionHold {
+  id                String               @id @default(cuid())
+  organizationId    String
+  subjectType       RetentionSubjectType
+  subjectId         String
+  reason            String
+  requestedByUserId String?
+  releasedAt        DateTime?
+  releasedByUserId  String?
+  releaseReason     String?
+  createdAt         DateTime             @default(now())
+  organization      Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, subjectType, subjectId])
+  @@index([organizationId, releasedAt])
+}
+
+model RetentionExecution {
+  id             String                      @id @default(cuid())
+  organizationId String
+  subjectType    RetentionSubjectType
+  subjectId      String
+  policyId       String
+  decision       RetentionExecutionDecision
+  actorType      RetentionExecutionActorType @default(user)
+  actorUserId    String?
+  evidenceJson   Json?
+  executedAt     DateTime                    @default(now())
+  organization   Organization                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  policy         RetentionPolicy             @relation(fields: [policyId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, subjectType, subjectId])
+  @@index([organizationId, executedAt])
+  @@index([policyId])
 }
