@@ -580,13 +580,9 @@ fertilizersRouter.patch(
           payload.evidenceDocumentId !== undefined
             ? payload.evidenceDocumentId
             : existing.evidenceDocumentId,
-        supersedesRecordId:
-          payload.supersedesRecordId !== undefined
-            ? payload.supersedesRecordId
-            : existing.supersedesRecordId,
+        supersedesRecordId: existing.id,
         allowInactiveProductId:
-          payload.productId === undefined ? existing.productId ?? undefined : undefined,
-        currentApplicationId: existing.id
+          payload.productId === undefined ? existing.productId ?? undefined : undefined
       });
 
       if (!resolution.ok) {
@@ -594,55 +590,53 @@ fertilizersRouter.patch(
       }
 
       const item = await prisma.$transaction(async (tx): Promise<ApplicationPayload> => {
-        const updated = await tx.fertilizerApplication.update({
-          where: { id: existing.id },
+        const updated = await tx.fertilizerApplication.create({
           data: {
+            organizationId: tenant.organizationId,
             farmSiteId: resolution.farmSite.id,
             plotId: resolution.plot.id,
             cropCycleId: resolution.cropCycle.id,
             productId: resolution.product?.id ?? null,
             workerId: resolution.worker?.id ?? null,
             evidenceDocumentId: resolution.document?.id ?? null,
-            supersedesRecordId: resolution.supersedesRecord?.id ?? null,
-            ...(payload.appliedAt !== undefined ? { appliedAt: new Date(payload.appliedAt) } : {}),
-            ...(payload.fertilizerName !== undefined
-              ? { fertilizerName: payload.fertilizerName }
-              : {}),
-            ...(payload.fertilizerType !== undefined
-              ? { fertilizerType: payload.fertilizerType }
-              : {}),
-            ...(payload.formulaLabelText !== undefined
-              ? { formulaLabelText: payload.formulaLabelText }
-              : {}),
-            ...(payload.nutrientN !== undefined ? { nutrientN: payload.nutrientN } : {}),
-            ...(payload.nutrientP !== undefined ? { nutrientP: payload.nutrientP } : {}),
-            ...(payload.nutrientK !== undefined ? { nutrientK: payload.nutrientK } : {}),
-            ...(payload.quantity !== undefined ? { quantity: payload.quantity } : {}),
-            ...(payload.quantityUnit !== undefined ? { quantityUnit: payload.quantityUnit } : {}),
-            ...(payload.applicationMethod !== undefined
-              ? { applicationMethod: payload.applicationMethod }
-              : {}),
-            ...(payload.treatedArea !== undefined ? { treatedArea: payload.treatedArea } : {}),
-            ...(payload.treatedAreaUnit !== undefined
-              ? { treatedAreaUnit: payload.treatedAreaUnit }
-              : {}),
-            ...(payload.operatorName !== undefined || payload.workerId !== undefined
-              ? { operatorName: payload.operatorName ?? resolution.worker?.fullName ?? existing.operatorName }
-              : {}),
-            ...(payload.reasonOrGrowthStage !== undefined
-              ? { reasonOrGrowthStage: payload.reasonOrGrowthStage }
-              : {}),
-            ...(payload.sourceOrSupplier !== undefined
-              ? { sourceOrSupplier: payload.sourceOrSupplier }
-              : {}),
-            ...(payload.lotNo !== undefined ? { lotNo: payload.lotNo } : {}),
-            ...(payload.waterVolume !== undefined ? { waterVolume: payload.waterVolume } : {}),
-            ...(payload.waterVolumeUnit !== undefined
-              ? { waterVolumeUnit: payload.waterVolumeUnit }
-              : {}),
-            ...(payload.equipmentName !== undefined ? { equipmentName: payload.equipmentName } : {}),
-            ...(payload.weatherNotes !== undefined ? { weatherNotes: payload.weatherNotes } : {}),
-            ...(payload.notes !== undefined ? { notes: payload.notes } : {})
+            supersedesRecordId: existing.id,
+            appliedAt:
+              payload.appliedAt !== undefined ? new Date(payload.appliedAt) : existing.appliedAt,
+            fertilizerName: payload.fertilizerName ?? existing.fertilizerName,
+            fertilizerType: payload.fertilizerType ?? existing.fertilizerType,
+            formulaLabelText:
+              payload.formulaLabelText !== undefined
+                ? payload.formulaLabelText
+                : existing.formulaLabelText,
+            nutrientN: payload.nutrientN !== undefined ? payload.nutrientN : existing.nutrientN,
+            nutrientP: payload.nutrientP !== undefined ? payload.nutrientP : existing.nutrientP,
+            nutrientK: payload.nutrientK !== undefined ? payload.nutrientK : existing.nutrientK,
+            quantity: payload.quantity ?? existing.quantity,
+            quantityUnit: payload.quantityUnit ?? existing.quantityUnit,
+            applicationMethod: payload.applicationMethod ?? existing.applicationMethod,
+            treatedArea: payload.treatedArea ?? existing.treatedArea,
+            treatedAreaUnit: payload.treatedAreaUnit ?? existing.treatedAreaUnit,
+            operatorName:
+              payload.operatorName !== undefined || payload.workerId !== undefined
+                ? payload.operatorName ?? resolution.worker?.fullName ?? existing.operatorName
+                : existing.operatorName,
+            reasonOrGrowthStage: payload.reasonOrGrowthStage ?? existing.reasonOrGrowthStage,
+            sourceOrSupplier:
+              payload.sourceOrSupplier !== undefined
+                ? payload.sourceOrSupplier
+                : existing.sourceOrSupplier,
+            lotNo: payload.lotNo !== undefined ? payload.lotNo : existing.lotNo,
+            waterVolume:
+              payload.waterVolume !== undefined ? payload.waterVolume : existing.waterVolume,
+            waterVolumeUnit:
+              payload.waterVolumeUnit !== undefined
+                ? payload.waterVolumeUnit
+                : existing.waterVolumeUnit,
+            equipmentName:
+              payload.equipmentName !== undefined ? payload.equipmentName : existing.equipmentName,
+            weatherNotes:
+              payload.weatherNotes !== undefined ? payload.weatherNotes : existing.weatherNotes,
+            notes: payload.notes !== undefined ? payload.notes : existing.notes
           },
           select: applicationSelect
         });
@@ -652,11 +646,12 @@ fertilizersRouter.patch(
             organizationId: tenant.organizationId,
             actorUserId: tenant.userId,
             entityType: "fertilizer_application",
-            entityId: existing.id,
-            action: "fertilizer_application.updated",
+            entityId: updated.id,
+            action: "fertilizer_application.superseded",
             payloadJson: {
               membershipId: tenant.membershipId,
               role: tenant.role,
+              supersedesRecordId: existing.id,
               previousPlotId: existing.plotId,
               nextPlotId: updated.plotId,
               previousProductId: existing.productId,
