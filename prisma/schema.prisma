@@ -184,6 +184,19 @@ enum HazardousSubstanceStorageCheckResult {
   needs_action
 }
 
+enum FertilizerProductStatus {
+  active
+  inactive
+}
+
+enum FertilizerType {
+  chemical
+  organic
+  biofertilizer
+  soil_amendment
+  other
+}
+
 model Organization {
   id                              String                           @id @default(cuid())
   name                            String
@@ -218,6 +231,8 @@ model Organization {
   hazardousSubstanceUseEvents     HazardousSubstanceUseEvent[]
   hazardousSubstanceStockEvents   HazardousSubstanceStockEvent[]
   hazardousSubstanceStorageChecks HazardousSubstanceStorageCheck[]
+  fertilizerProducts              FertilizerProduct[]
+  fertilizerApplications          FertilizerApplication[]
 }
 
 model User {
@@ -279,6 +294,7 @@ model FarmSite {
   traceLots                       TraceLot[]
   hazardousSubstanceUseEvents     HazardousSubstanceUseEvent[]
   hazardousSubstanceStorageChecks HazardousSubstanceStorageCheck[]
+  fertilizerApplications          FertilizerApplication[]
 
   @@index([organizationId])
 }
@@ -294,6 +310,7 @@ model Plot {
   cropCycles                  CropCycle[]
   operationLogs               OperationLog[]
   hazardousSubstanceUseEvents HazardousSubstanceUseEvent[]
+  fertilizerApplications      FertilizerApplication[]
 
   @@index([farmSiteId])
 }
@@ -315,6 +332,7 @@ model CropCycle {
   gapRecords                  GapRecord[]
   traceLots                   TraceLot[]
   hazardousSubstanceUseEvents HazardousSubstanceUseEvent[]
+  fertilizerApplications      FertilizerApplication[]
 
   @@index([organizationId, farmSiteId])
 }
@@ -336,6 +354,7 @@ model Worker {
   hazardousSubstanceUseEvents     HazardousSubstanceUseEvent[]
   hazardousSubstanceStockEvents   HazardousSubstanceStockEvent[]
   hazardousSubstanceStorageChecks HazardousSubstanceStorageCheck[]
+  fertilizerApplications          FertilizerApplication[]
 
   @@index([organizationId, isActive, createdAt])
   @@index([farmSiteId])
@@ -472,6 +491,80 @@ model HazardousSubstanceStorageCheck {
   @@index([organizationId, checkedAt])
   @@index([organizationId, result, checkedAt])
   @@index([organizationId, farmSiteId, checkedAt])
+}
+
+model FertilizerProduct {
+  id               String                  @id @default(cuid())
+  organizationId   String
+  name             String
+  type             FertilizerType          @default(other)
+  formulaLabelText String?
+  nutrientN        Float?
+  nutrientP        Float?
+  nutrientK        Float?
+  sourceOrSupplier String?
+  status           FertilizerProductStatus @default(active)
+  notes            String?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  organization     Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applications     FertilizerApplication[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId, status, createdAt])
+  @@index([organizationId, type, name])
+}
+
+model FertilizerApplication {
+  id                  String             @id @default(cuid())
+  organizationId      String
+  farmSiteId          String
+  plotId              String
+  cropCycleId         String
+  productId           String?
+  workerId            String?
+  evidenceDocumentId  String?
+  appliedAt           DateTime
+  fertilizerName      String
+  fertilizerType      FertilizerType
+  formulaLabelText    String?
+  nutrientN           Float?
+  nutrientP           Float?
+  nutrientK           Float?
+  quantity            Float
+  quantityUnit        String
+  applicationMethod   String
+  treatedArea         Float
+  treatedAreaUnit     String
+  operatorName        String
+  reasonOrGrowthStage String
+  sourceOrSupplier    String?
+  lotNo               String?
+  waterVolume         Float?
+  waterVolumeUnit     String?
+  equipmentName       String?
+  weatherNotes        String?
+  notes               String?
+  supersedesRecordId  String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  organization        Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  farmSite            FarmSite           @relation(fields: [farmSiteId], references: [id], onDelete: Cascade)
+  plot                Plot               @relation(fields: [plotId], references: [id], onDelete: Restrict)
+  cropCycle           CropCycle          @relation(fields: [cropCycleId], references: [id], onDelete: Restrict)
+  product             FertilizerProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  worker              Worker?            @relation(fields: [workerId], references: [id], onDelete: SetNull)
+  evidenceDocument    Document?          @relation("FertilizerApplicationEvidenceDocument", fields: [evidenceDocumentId], references: [id], onDelete: SetNull)
+  supersedesRecord    FertilizerApplication?  @relation("FertilizerApplicationSupersession", fields: [supersedesRecordId], references: [id], onDelete: SetNull)
+  supersededByRecords FertilizerApplication[] @relation("FertilizerApplicationSupersession")
+
+  @@index([organizationId, appliedAt])
+  @@index([organizationId, farmSiteId, appliedAt])
+  @@index([organizationId, plotId, appliedAt])
+  @@index([organizationId, cropCycleId, appliedAt])
+  @@index([organizationId, productId, appliedAt])
+  @@index([organizationId, workerId, appliedAt])
+  @@index([organizationId, supersedesRecordId])
 }
 
 model GapChecklist {
@@ -781,6 +874,7 @@ model Document {
   hazardousSubstanceUseEvents     HazardousSubstanceUseEvent[]     @relation("HazardousSubstanceUseEvidenceDocument")
   hazardousSubstanceStockEvents   HazardousSubstanceStockEvent[]   @relation("HazardousSubstanceStockEvidenceDocument")
   hazardousSubstanceStorageChecks HazardousSubstanceStorageCheck[] @relation("HazardousSubstanceStorageEvidenceDocument")
+  fertilizerApplications          FertilizerApplication[]          @relation("FertilizerApplicationEvidenceDocument")
 
   @@index([organizationId, status])
   @@index([organizationId, createdAt])

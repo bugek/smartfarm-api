@@ -6,6 +6,7 @@ import { correctiveActionsRouter } from "./v1/corrective-actions.js";
 import { cropCyclesRouter } from "./v1/crop-cycles.js";
 import { documentsRouter } from "./v1/documents.js";
 import { evidenceRouter } from "./v1/evidence.js";
+import { fertilizersRouter } from "./v1/fertilizers.js";
 import { gapRecordsRouter } from "./v1/gap-records.js";
 import { hazardousSubstancesRouter } from "./v1/hazardous-substances.js";
 import { healthRouter } from "./v1/health.js";
@@ -38,6 +39,7 @@ export function registerRoutes(app: Express) {
   app.use("/api/v1/workers", workersRouter);
   app.use("/api/v1/operation-logs", operationLogsRouter);
   app.use("/api/v1/gap-records", gapRecordsRouter);
+  app.use("/api/v1/fertilizers", fertilizersRouter);
   app.use("/api/v1/hazardous-substances", hazardousSubstancesRouter);
   app.use("/api/v1/documents", documentsRouter);
   app.use("/api/v1/evidence", evidenceRouter);
